@@ -1,0 +1,29 @@
+<div class="first">
+    <ng-container *mediaMatch="'xs'">
+        This is <b>XS</b> screen
+    </ng-container>
+
+    <ng-container *mediaMatch="'sm'">
+        This is <b>SM</b> screen
+    </ng-container>
+
+    <ng-container *mediaMatch="'md'">
+        This is <b>MD</b> screen
+    </ng-container>
+
+    <ng-container *mediaMatch="'lg'">
+        this is <b>LG</b> screen
+    </ng-container>
+
+    <ng-container *mediaMatch="'xl'">
+        this is <b>XL</b> screen
+    </ng-container>
+
+</div>
+<div class="text">
+    <div [class]="{xs:'is-xs',sm:'is-sm',md:'is-md'} | mediaMatch:'is-large' | async">
+        Changes background as per media query => {{
+        {xs:'It is mobile device'} | mediaMatch:'It is not mobile device' | async
+        }}
+    </div>
+</div>

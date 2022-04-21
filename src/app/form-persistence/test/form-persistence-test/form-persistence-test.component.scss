@@ -1,0 +1,21 @@
+:host {
+  display: grid;
+  place-content: center;
+  min-height: 500px;
+}
+.form {
+  //   max-width: 700px;
+  min-width: 500px;
+  padding: 2rem;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  label {
+    margin-bottom: 0.3rem;
+    display: inline-block;
+  }
+  .title {
+    font-size: 25px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+}

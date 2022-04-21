@@ -1,1 +1,20 @@
+body {
+  font-family: Tahoma, sans-serif;
+}
 /* You can add global styles to this file, and also import other style files */
+.form-group {
+  margin-bottom: 1rem;
+  input {
+    padding: 0.5rem 0.8rem;
+    border: 1px solid #aaa;
+    border-radius: 5px;
+    width: -webkit-fill-available;
+  }
+  button {
+    padding: 0.5rem 0.8rem;
+    background: green;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+}

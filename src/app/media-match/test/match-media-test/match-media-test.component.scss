@@ -1,0 +1,30 @@
+.first {
+  padding: 1rem;
+  margin-bottom: 1rem;
+  font-size: 20px;
+  background: #ddd;
+  border-radius: 10px;
+}
+.text {
+  & > div {
+    font-size: 20px;
+    border-radius: 10px;
+    font-weight: 800;
+    background: #ddd;
+    padding: 1rem;
+    color: white;
+  }
+  & > .is-xs {
+    background: red;
+  }
+
+  & > .is-md {
+    background: green;
+  }
+  & > .is-sm {
+    background: blue;
+  }
+  & > .is-large {
+    background: #8e24aa;
+  }
+}
