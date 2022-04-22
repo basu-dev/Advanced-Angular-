@@ -4,6 +4,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { FormPersistenceModule } from './form-persistence/form-persistence.module';
+import { HeightCalculateModule } from './height-calculate/height-calculate.module';
 import { MediaMatchModule } from './media-match/media-match.module';
 
 @NgModule({
@@ -14,7 +15,8 @@ import { MediaMatchModule } from './media-match/media-match.module';
     BrowserModule,
     AppRoutingModule,
     MediaMatchModule,
-    FormPersistenceModule
+    FormPersistenceModule,
+    HeightCalculateModule
   ],
   providers: [],
   bootstrap: [AppComponent]
