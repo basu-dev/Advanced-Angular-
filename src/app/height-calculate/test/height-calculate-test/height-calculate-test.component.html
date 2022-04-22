@@ -2,7 +2,8 @@
     <nav #nav>Navbar</nav>
 
     <div class="body" [style.height.px]="[layout,footer,nav] | heightCalculate:heightCalculate$ | async">
-        This is body and it needs to take full space upto footer
+        This is body and it needs to take full space upto footer.
+        <p>Height will be calculated after 1 seconds in this case</p>
     </div>
 
     <footer #footer>
