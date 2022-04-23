@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { BroadcastChannelModule } from './broadcast-channel/broadcast-channel.module';
 import { FormPersistenceModule } from './form-persistence/form-persistence.module';
 import { HeightCalculateModule } from './height-calculate/height-calculate.module';
 import { MediaMatchModule } from './media-match/media-match.module';
@@ -16,7 +17,8 @@ import { MediaMatchModule } from './media-match/media-match.module';
     AppRoutingModule,
     MediaMatchModule,
     FormPersistenceModule,
-    HeightCalculateModule
+    HeightCalculateModule,
+    BroadcastChannelModule
   ],
   providers: [],
   bootstrap: [AppComponent]
