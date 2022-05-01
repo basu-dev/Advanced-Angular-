@@ -1,4 +1,5 @@
-import { ElementRef, Pipe, PipeTransform } from '@angular/core';
+import { ElementRef, NgModule, Pipe, PipeTransform } from '@angular/core';
+import { Subject, takeUntil, tap } from 'rxjs';
 
 function convertRemToPixels(rem: number) {
   return (
@@ -17,8 +18,12 @@ function getElementHeight(data: {
       if (element instanceof HTMLElement) {
         height = element.offsetHeight;
       } else if (typeof element === "string") {
-        height =
-          data.rootElement.querySelector<HTMLElement>(element)?.offsetHeight || 0;
+        try {
+          height =
+            data.rootElement.querySelector<HTMLElement>(element)!.offsetHeight!;
+        } catch (e) {
+          throw (new Error(`Could not find element matching selector ${element}`));
+        }
       } else height = convertRemToPixels(element);
       totalHeight += height;
     }
@@ -27,8 +32,9 @@ function getElementHeight(data: {
   return height;
 }
 
-function getHeight(items: Array<number | HTMLElement | string>): number {
+function calculateHeight(items: Array<number | HTMLElement | string>): number {
   let root = items.shift();
+  if (!(root instanceof HTMLElement)) throw (new Error(`${root} is not an instance of HTMLElement. First element passed to heightCalculate pipe should always be an HTMLElement`));
   let transformedItems: Array<number | HTMLElement | string> = items.map(item => {
     if (item instanceof ElementRef) {
       item = item.nativeElement as HTMLElement;
@@ -41,28 +47,51 @@ function getHeight(items: Array<number | HTMLElement | string>): number {
   });
 }
 
+export interface IHeightCalculate {
+  heightCalculate$: Subject<boolean>;
+}
+
 @Pipe({
   name: 'heightCalculate'
 })
 export class HeightCalculatePipe implements PipeTransform {
 
+  destroy$ = new Subject<void>();
+
   transform(items: Array<number | HTMLElement | string>, ...args: any[]): Promise<number> {
     return new Promise<number>((resolve) => {
-      args[0].subscribe((_: any) => {
-        resolve(getHeight([...items]));
-      });
+      args[0]
+        .pipe(
+          takeUntil(this.destroy$),
+          tap(data => {
+            if (!data) {
+              this.destroy$.next();
+              this.destroy$.complete();
+            }
+          }),
+        )
+        .subscribe((_: any) => {
+          resolve(calculateHeight([...items]));
+        });
     });
   }
-
 }
 
 @Pipe({
   name: 'heightCalculateSync'
 })
 export class HeightCalculateSyncPipe implements PipeTransform {
-
   transform(items: Array<number | HTMLElement | string>, ...args: any[]): Promise<number> | number {
-    return getHeight([...items]);
+    return calculateHeight([...items]);
   }
-
 }
+
+@NgModule({
+  declarations: [
+    HeightCalculatePipe, HeightCalculateSyncPipe
+  ],
+  exports: [
+    HeightCalculatePipe, HeightCalculateSyncPipe
+  ]
+})
+export class HeightCalculateModule { }
