@@ -7,9 +7,9 @@ import { BroadcastChannelModule } from './broadcast-channel/broadcast-channel.mo
 import { HeightCalculateTestComponent } from './components/height-calculate-test/height-calculate-test.component';
 import { MatchMediaTestComponent } from './components/match-media-test/match-media-test.component';
 import { FormPersistenceModule } from './form-persistence/form-persistence.module';
-import { HeightCalculateModule } from './height-calculate/height-calculate';
-import { MediaMatchModule } from './media-match/media-match';
+import { HeightCalculateModule } from '../lib/height-calculate/height-calculate';
 import { TwoWayBindingModule } from './two-way-binding/two-way-binding.module';
+import { MediaMatchModule } from 'src/lib/media-match/media-match';
 
 @NgModule({
   declarations: [

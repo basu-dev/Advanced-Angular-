@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Subject } from 'rxjs';
-import { IHeightCalculate } from '../../height-calculate/height-calculate';
+import { IHeightCalculate } from '../../../lib/height-calculate/height-calculate';
 
 @Component({
   selector: 'app-height-calculate-test',
