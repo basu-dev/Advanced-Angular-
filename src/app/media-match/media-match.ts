@@ -1,5 +1,5 @@
-import { Pipe, PipeTransform } from '@angular/core';
-import { debounceTime, fromEvent, Observable, of, startWith, switchMap, throttle, throttleTime } from 'rxjs';
+import { Directive, Input, NgModule, Pipe, PipeTransform, TemplateRef, ViewContainerRef } from '@angular/core';
+import { debounceTime, fromEvent, map, Observable, of, startWith, switchMap } from 'rxjs';
 
 const breakPoints = {
   xs: "(max-width:599px)",
@@ -15,6 +15,7 @@ function windowResize() {
     startWith('')
   );
 }
+
 export interface IMatchMedia {
   xs?: string;
   sm?: string;
@@ -55,3 +56,47 @@ export class MediaMatchPipe implements PipeTransform {
   }
 
 }
+
+function mediaQueryChange(breakpoint: string): Observable<boolean> {
+  let media = matchMedia(breakpoint);
+  return fromEvent(media, 'change').pipe(
+    map((e: any) => e.matches),
+    startWith(media.matches)
+  );
+}
+
+@Directive({
+  selector: '[mediaMatch]'
+})
+export class MediaMatchDirective {
+
+  @Input() mediaMatch!: keyof typeof breakPoints;
+
+  constructor(private tpl: TemplateRef<any>,
+    private vcr: ViewContainerRef
+  ) { }
+
+  ngOnInit() {
+    mediaQueryChange(breakPoints[this.mediaMatch]).subscribe(
+      match => {
+        if (match) {
+          this.vcr.createEmbeddedView(this.tpl);
+        } else {
+          this.vcr.clear();
+        }
+      }
+    );
+  }
+}
+
+@NgModule({
+  declarations: [
+    MediaMatchDirective,
+    MediaMatchPipe,
+  ],
+  exports: [
+    MediaMatchPipe,
+    MediaMatchDirective,
+  ]
+})
+export class MediaMatchModule { }
