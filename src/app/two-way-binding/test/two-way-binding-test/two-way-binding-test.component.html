@@ -1,0 +1,18 @@
+<div class="layout">
+    <form>
+        <div class="form-group">
+            <label>Name</label>
+            <input class="form-control" [(twoWay)]="name">
+        </div>
+
+        <div class="form-group">
+            <label>Description</label>
+            <textarea class="form-control" [(twoWay)]="description"></textarea>
+        </div>
+    </form>
+    <div>
+        Name: {{name}}
+    </div>
+    <p>Description: </p>
+    <div>{{description}}</div>
+</div>

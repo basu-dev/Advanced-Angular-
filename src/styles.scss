@@ -8,6 +8,7 @@ body {
 }
 .form-group {
   margin-bottom: 1rem;
+  textarea.form-control,
   input.form-control {
     padding: 0.7rem 0.8rem;
     border: 1px solid #aaa;
@@ -24,4 +25,8 @@ body {
     font-weight: 600;
     cursor: pointer;
   }
+}
+
+.layout {
+  padding: 1rem;
 }

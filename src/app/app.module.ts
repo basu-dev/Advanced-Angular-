@@ -7,6 +7,7 @@ import { BroadcastChannelModule } from './broadcast-channel/broadcast-channel.mo
 import { FormPersistenceModule } from './form-persistence/form-persistence.module';
 import { HeightCalculateModule } from './height-calculate/height-calculate.module';
 import { MediaMatchModule } from './media-match/media-match.module';
+import { TwoWayBindingModule } from './two-way-binding/two-way-binding.module';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { MediaMatchModule } from './media-match/media-match.module';
     MediaMatchModule,
     FormPersistenceModule,
     HeightCalculateModule,
-    BroadcastChannelModule
+    BroadcastChannelModule,
+    TwoWayBindingModule
   ],
   providers: [],
   bootstrap: [AppComponent]
