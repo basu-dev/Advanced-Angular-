@@ -1,0 +1,6 @@
+<form [formGroup]="form" class="form-group">
+    <label for="">Name</label>
+    <app-custom-form-control [maxLength]="10" [data]="{required:'Name is asdf sad fsadf asfd asdf  required'}">
+        <input [maxLength]="10" class="form-control" formControlName="name">
+    </app-custom-form-control>
+</form>

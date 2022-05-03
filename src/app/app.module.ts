@@ -10,12 +10,16 @@ import { FormPersistenceModule } from './form-persistence/form-persistence.modul
 import { HeightCalculateModule } from '../lib/height-calculate/height-calculate';
 import { TwoWayBindingModule } from './two-way-binding/two-way-binding.module';
 import { MediaMatchModule } from 'src/lib/media-match/media-match';
+import { CustomFormControlTestComponent } from './components/custom-form-control-test/custom-form-control-test.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { CustomFormControlModule } from 'src/lib/form-control/form-control.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeightCalculateTestComponent,
-    MatchMediaTestComponent
+    MatchMediaTestComponent,
+    CustomFormControlTestComponent
   ],
   imports: [
     BrowserModule,
@@ -24,7 +28,9 @@ import { MediaMatchModule } from 'src/lib/media-match/media-match';
     FormPersistenceModule,
     HeightCalculateModule,
     BroadcastChannelModule,
-    TwoWayBindingModule
+    CustomFormControlModule,
+    TwoWayBindingModule,
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

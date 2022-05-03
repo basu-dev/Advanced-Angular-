@@ -1,0 +1,14 @@
+<ng-content></ng-content>
+<div class="error-container">
+    <ng-container *ngFor="let errorType of dataKeys">
+        <div class="error">
+            <ng-container *ngIf="(hasError$ | async) as hasError">
+                <ng-container *ngIf="hasError[errorType]">{{errorType | fromObject:data}}
+                </ng-container>
+            </ng-container>
+        </div>
+    </ng-container>
+    <div *ngIf="control && maxLength" class="counter">
+        [{{control.value?.length || 0}} / {{maxLength}}]
+    </div>
+</div>
