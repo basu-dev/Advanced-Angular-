@@ -52,15 +52,15 @@ export interface IHeightCalculate {
 }
 
 @Pipe({
-  name: 'heightCalculate'
+  name: 'heightCalculateAsync'
 })
 export class HeightCalculatePipe implements PipeTransform {
 
   destroy$ = new Subject<void>();
 
-  transform(items: Array<number | HTMLElement | string>, ...args: any[]): Promise<number> {
+  transform(items: Array<number | HTMLElement | string>, trigger: Subject<boolean>): Promise<number> {
     return new Promise<number>((resolve) => {
-      args[0]
+      trigger
         .pipe(
           takeUntil(this.destroy$),
           tap(data => {
@@ -78,7 +78,7 @@ export class HeightCalculatePipe implements PipeTransform {
 }
 
 @Pipe({
-  name: 'heightCalculateSync'
+  name: 'heightCalculate'
 })
 export class HeightCalculateSyncPipe implements PipeTransform {
   transform(items: Array<number | HTMLElement | string>, ...args: any[]): Promise<number> | number {

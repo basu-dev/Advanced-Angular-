@@ -13,10 +13,12 @@ export class CustomFormControlTestComponent implements OnInit {
 
   constructor(private fb: FormBuilder) { }
   form!: FormGroup;
+  MAX_LENGTH: number = 10;
 
   ngOnInit(): void {
     this.form = this.fb.group({
-      name: [, [Validators.required, Validators.maxLength(5)]]
+      name: [, [Validators.required, Validators.maxLength(this.MAX_LENGTH),
+      ]]
     });
   }
 

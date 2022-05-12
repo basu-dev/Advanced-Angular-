@@ -21,7 +21,7 @@
 
 </div>
 <div class="text">
-    <div [class]="{xs:'is-xs',sm:'is-sm',md:'is-md'} | mediaMatch:'is-large' | async">
+    <div [class]="{xs:'is-xs',sm:'is-sm',md:'is-md'} | mediaMatchDefault:'is-large' | async">
         Changes background as per media query => {{
         {xs:'It is mobile device'} | mediaMatch:'It is not mobile device' | async
         }}

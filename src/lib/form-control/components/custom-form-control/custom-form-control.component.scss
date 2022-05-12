@@ -1,13 +1,17 @@
-.error-container {
-  margin-top: 0.5rem;
+.c-additions {
   display: flex;
   gap: 1rem;
   justify-content: space-between;
-  .error {
-    color: red;
+  margin-top: 0.5rem;
+  .c-error-container {
+    .c-error {
+      color: red;
+      font-size: 0.8rem;
+    }
   }
-  .counter {
-    min-width: 10ch;
+  .c-counter {
+    min-width: fit-content;
+    width: fit-content;
     text-align: end;
   }
 }

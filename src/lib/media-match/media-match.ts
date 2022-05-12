@@ -24,10 +24,7 @@ export interface IMatchMedia {
   xl?: string;
 }
 
-@Pipe({
-  name: 'mediaMatch'
-})
-export class MediaMatchPipe implements PipeTransform {
+export class MediaMatchPipeBase implements PipeTransform {
   transform(value: IMatchMedia, ...args: string[]): Observable<any> {
     return windowResize().pipe(
       switchMap(_ => {
@@ -55,6 +52,20 @@ export class MediaMatchPipe implements PipeTransform {
     );
   }
 
+}
+
+@Pipe({
+  name: 'mediaMatch'
+})
+export class MediaMatchPipe extends MediaMatchPipeBase implements PipeTransform {
+  constructor() { super(); }
+}
+
+@Pipe({
+  name: 'mediaMatchDefault'
+})
+export class MediaMatchDefaultPipe extends MediaMatchPipeBase implements PipeTransform {
+  constructor() { super(); }
 }
 
 function mediaQueryChange(breakpoint: string): Observable<boolean> {
@@ -93,9 +104,11 @@ export class MediaMatchDirective {
   declarations: [
     MediaMatchDirective,
     MediaMatchPipe,
+    MediaMatchDefaultPipe
   ],
   exports: [
     MediaMatchPipe,
+    MediaMatchDefaultPipe,
     MediaMatchDirective,
   ]
 })
