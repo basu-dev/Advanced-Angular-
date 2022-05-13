@@ -27,6 +27,7 @@ export class CustomFormControlComponent implements OnInit {
 
   @ContentChild(FormControlName) control!: FormControlName;
 
+  /**Max Length count is used to show remaining letters in right hand side of form error area eg. [5 / 10] */
   @Input() maxLengthCount!: number;
   @Input('errorMessages') _data: IError = <IError>{};
 
@@ -40,7 +41,11 @@ export class CustomFormControlComponent implements OnInit {
   @Input() requiredTrue?: string;
   @Input() nullValidator?: string;
 
+  /** if priority is true => in case of multiple errors, we only show first error and make other errors null so that only higher priority error is shown in screen
+  * else we will show all the errors
+  **/
   @Input() priority = false;
+  /** If onTouchedOnly flag is on, we only show errors after the form is touched and has errors */
   @Input() onTouchedOnly = false;
 
 
@@ -66,6 +71,7 @@ export class CustomFormControlComponent implements OnInit {
     if (this.nullValidator) this._data['nullValidator'] = this.nullValidator;
   }
 
+  /** We need to make all the keys of errorMessages to be lowerCase for further processing. This is what we do in this function */
   formatInputData() {
     try {
       this.data = <IError>{};
@@ -84,7 +90,6 @@ export class CustomFormControlComponent implements OnInit {
   }
 
   matchFormErrorsWithInputErrorMessages() {
-    let error: any = {};
     // This observable is used to look any errors when the form is touched. This stream emits `true` at the start
     // if `this.onTouchOnly=false` and will only emit `true` after the control is touched if `this.onTouchOnly=true`.
     const touched$ = new Observable<any>((subscribe => {
@@ -105,12 +110,20 @@ export class CustomFormControlComponent implements OnInit {
       }),
       switchMap(_ => of(
         this.dataKeys.reduce((acc, key) => {
-          acc[key] = this.control.errors ? this.control.errors[key] : null;
+          let accProps = Object.getOwnPropertyNames(acc);
+          // if priority is on => in case of multiple errors, we only use first error and make other errors null so that only higher priority error is shown in screen
+          // else we will show all the errors
+          if (this.priority) {
+            /** It is true if one of the errors is already true, which if true we make other error values null so that only one error is shown */
+            let alreadyOne = accProps.length && accProps.some(prop => acc[prop]);
+            acc[key] = alreadyOne ? null : this.control.errors ? this.control.errors[key] : null;
+          } else {
+            acc[key] = this.control.errors ? this.control.errors[key] : null;
+          }
           return acc;
-        }, error)
+        }, <any>{})
       )),
     ) as Observable<any>;
-
   }
 
 }

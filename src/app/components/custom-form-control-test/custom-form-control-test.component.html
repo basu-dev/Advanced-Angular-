@@ -1,10 +1,10 @@
 <form [formGroup]="form" class="form-group">
     <label for="">Name</label>
-    <c-form-control [errorMessages]="{
+    <c-form-control [priority]="true" [onTouchedOnly]="true" [errorMessages]="{
        required: 'This is required',
-       email:'Email',
-       maxLength: 'Max length'
-   }" [priority]="true" [onTouchedOnly]="true">
+       maxLength: 'Max length',
+       email:'Email'
+   }">
         <input class="form-control" formControlName="name">
 
         <small *ngIf="form.get('name')?.touched">Touched Now</small>
