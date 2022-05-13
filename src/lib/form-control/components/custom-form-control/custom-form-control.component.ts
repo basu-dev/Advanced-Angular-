@@ -1,10 +1,10 @@
-import { Component, ContentChild, Input, OnInit, Pipe, PipeTransform } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ContentChild, Input, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { FormControlName } from '@angular/forms';
-import { distinctUntilChanged, Observable, of, switchMap } from 'rxjs';
+import { distinctUntilChanged, Observable, of, switchMap, tap } from 'rxjs';
 
 export interface IError {
   required?: string,
-  nullValidation?: string,
+  nullValidator?: string,
   requiredTrue?: string,
   min?: string,
   max?: string,
@@ -17,16 +17,31 @@ export interface IError {
 @Component({
   selector: 'c-form-control',
   templateUrl: './custom-form-control.component.html',
-  styleUrls: ['./custom-form-control.component.scss']
+  styleUrls: ['./custom-form-control.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CustomFormControlComponent implements OnInit {
 
   constructor() { }
 
 
-  @Input('errorMessages') _data!: IError;
-  @Input() maxLength!: number;
   @ContentChild(FormControlName) control!: FormControlName;
+
+  @Input() maxLengthCount!: number;
+  @Input('errorMessages') _data: IError = <IError>{};
+
+  @Input() required!: string;
+  @Input() maxLength?: string;
+  @Input() minLength?: string;
+  @Input() min?: string;
+  @Input() max?: string;
+  @Input() email?: string;
+  @Input() pattern?: string;
+  @Input() requiredTrue?: string;
+  @Input() nullValidator?: string;
+
+  @Input() priority = false;
+
 
   data: any;
 
@@ -34,7 +49,20 @@ export class CustomFormControlComponent implements OnInit {
   dataKeys!: string[];
 
   ngOnInit(): void {
+    this.init();
     this.formatInputData();
+  }
+
+  init() {
+    if (this.required) this._data['required'] = this.required;
+    if (this.maxLength) this._data['maxLength'] = this.maxLength;
+    if (this.minLength) this._data['minLength'] = this.minLength;
+    if (this.max) this._data['max'] = this.max;
+    if (this.min) this._data['min'] = this.min;
+    if (this.email) this._data['email'] = this.email;
+    if (this.pattern) this._data['pattern'] = this.pattern;
+    if (this.requiredTrue) this._data['requiredTrue'] = this.requiredTrue;
+    if (this.nullValidator) this._data['nullValidator'] = this.nullValidator;
   }
 
   formatInputData() {
@@ -51,10 +79,21 @@ export class CustomFormControlComponent implements OnInit {
 
   ngAfterContentInit() {
     if (!this.dataKeys.length) return;
+    this.matchFormErrorsWithInputErrorMessages();
+  }
+
+  matchFormErrorsWithInputErrorMessages() {
     let error: any = {};
     this.hasError$ = this.control.statusChanges?.pipe(
-      distinctUntilChanged(),
-      switchMap(() => of(
+      switchMap(() => of(this.control.errors)),
+      distinctUntilChanged((x, y) => {
+        let xProp = Object.getOwnPropertyNames(x);
+        let yProp = Object.getOwnPropertyNames(y);
+        if (xProp.length !== yProp.length) return false;
+        return xProp.every(prop => yProp.includes(prop));
+      }),
+      tap(console.log),
+      switchMap(_ => of(
         this.dataKeys.reduce((acc, key) => {
           acc[key] = this.control.errors ? this.control.errors[key] : null;
           return acc;

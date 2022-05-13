@@ -18,6 +18,7 @@ export class CustomFormControlTestComponent implements OnInit {
   ngOnInit(): void {
     this.form = this.fb.group({
       name: [, [Validators.required, Validators.maxLength(this.MAX_LENGTH),
+      Validators.email,
       ]]
     });
   }

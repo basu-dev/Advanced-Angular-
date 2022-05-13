@@ -2,6 +2,7 @@
 <div class="c-additions">
     <div class="c-error-container">
         <ng-container *ngIf="(hasError$ | async) as hasError">
+            <!-- {{hasError | json}} -->
             <ng-container *ngFor="let errorType of dataKeys">
                 <div class="c-error" *ngIf="hasError[errorType]">
                     {{errorType | fromObject:data}}
@@ -9,7 +10,7 @@
             </ng-container>
         </ng-container>
     </div>
-    <div *ngIf="control && maxLength" class="c-counter">
-        [{{control.value?.length || 0}} / {{maxLength}}]
+    <div *ngIf="control && maxLengthCount" class="c-counter">
+        [{{control.value?.length || 0}} / {{maxLengthCount}}]
     </div>
 </div>
