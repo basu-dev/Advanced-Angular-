@@ -13,6 +13,7 @@ import { MediaMatchModule } from 'src/lib/media-match/media-match';
 import { CustomFormControlTestComponent } from './components/custom-form-control-test/custom-form-control-test.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CustomFormControlModule } from 'src/lib/form-control/form-control.module';
+import { CUSTOM_FORM_CONFIG, IErrorConfig } from 'src/lib/form-control/components/custom-form-control/custom-form-control.component';
 
 @NgModule({
   declarations: [
@@ -32,7 +33,18 @@ import { CustomFormControlModule } from 'src/lib/form-control/form-control.modul
     TwoWayBindingModule,
     ReactiveFormsModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: CUSTOM_FORM_CONFIG,
+      useValue: <IErrorConfig>{
+        required: "This field is required",
+        email: "Please enter a valid email address",
+        priority: true,
+        onTouchedOnly: false
+      }
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+
