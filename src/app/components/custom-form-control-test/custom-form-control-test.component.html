@@ -4,9 +4,10 @@
        required: 'This is required',
        email:'Email',
        maxLength: 'Max length'
-   }" [priority]="true">
+   }" [priority]="true" [onTouchedOnly]="true">
         <input class="form-control" formControlName="name">
-        <!-- <small *ngIf="form.get('name')?.hasError('required')">It is required</small>
-        <small *ngIf="form.get('name')?.hasError('email')">It is email</small> -->
+
+        <small *ngIf="form.get('name')?.touched">Touched Now</small>
+        <!-- <small *ngIf="form.get('name')?.hasError('email')">It is email</small> -->
     </c-form-control>
 </form>

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ContentChild, Input, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { FormControlName } from '@angular/forms';
-import { distinctUntilChanged, Observable, of, switchMap, tap } from 'rxjs';
+import { combineLatest, distinctUntilChanged, Observable, of, switchMap } from 'rxjs';
 
 export interface IError {
   required?: string,
@@ -41,9 +41,10 @@ export class CustomFormControlComponent implements OnInit {
   @Input() nullValidator?: string;
 
   @Input() priority = false;
+  @Input() onTouchedOnly = false;
 
 
-  data: any;
+  data!: any;
 
   hasError$!: Observable<any>;
   dataKeys!: string[];
@@ -67,7 +68,7 @@ export class CustomFormControlComponent implements OnInit {
 
   formatInputData() {
     try {
-      this.data = {};
+      this.data = <IError>{};
       for (let [key, value] of Object.entries(this._data)) {
         this.data[key.toLocaleLowerCase()] = value;
       }
@@ -84,7 +85,17 @@ export class CustomFormControlComponent implements OnInit {
 
   matchFormErrorsWithInputErrorMessages() {
     let error: any = {};
-    this.hasError$ = this.control.statusChanges?.pipe(
+    // This observable is used to look any errors when the form is touched. This stream emits `true` at the start
+    // if `this.onTouchOnly=false` and will only emit `true` after the control is touched if `this.onTouchOnly=true`.
+    const touched$ = new Observable<any>((subscribe => {
+      if (this.onTouchedOnly) {
+        this.control.valueAccessor?.registerOnTouched(() => subscribe.next(true));
+      } else {
+        subscribe.next(true);
+      }
+    })).pipe(distinctUntilChanged());
+
+    this.hasError$ = combineLatest(touched$, this.control.statusChanges!).pipe(
       switchMap(() => of(this.control.errors)),
       distinctUntilChanged((x, y) => {
         let xProp = Object.getOwnPropertyNames(x);
@@ -92,7 +103,6 @@ export class CustomFormControlComponent implements OnInit {
         if (xProp.length !== yProp.length) return false;
         return xProp.every(prop => yProp.includes(prop));
       }),
-      tap(console.log),
       switchMap(_ => of(
         this.dataKeys.reduce((acc, key) => {
           acc[key] = this.control.errors ? this.control.errors[key] : null;
@@ -100,7 +110,9 @@ export class CustomFormControlComponent implements OnInit {
         }, error)
       )),
     ) as Observable<any>;
+
   }
+
 }
 
 @Pipe({
@@ -113,3 +125,4 @@ export class GetValuePipe implements PipeTransform {
     return data[item];
   }
 }
+
