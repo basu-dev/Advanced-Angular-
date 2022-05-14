@@ -29,8 +29,7 @@ export const CUSTOM_FORM_CONFIG = new InjectionToken('Custom-Form-Config');
 })
 export class CustomFormControlComponent implements OnInit {
 
-  constructor(@Inject(CUSTOM_FORM_CONFIG) private config: IErrorConfig) {
-  }
+  constructor(@Inject(CUSTOM_FORM_CONFIG) private config: IErrorConfig) { }
 
   @ContentChild(FormControlName) control!: FormControlName;
 
@@ -52,15 +51,12 @@ export class CustomFormControlComponent implements OnInit {
   * else we will show all the errors
   * It only works if you provide all the validators in object form. If you pass any of the error message as normal input, we cannot determine
   * which error to show and which not in case of two errors occuring at same time. In that case priority is automatically set to false.
-  * 
   **/
   @Input() priority!: boolean;
   /** If onTouchedOnly flag is on, we only show errors after the form is touched and has errors */
   @Input() onTouchedOnly!: boolean;
 
-
   data!: any;
-
   hasError$!: Observable<any>;
   dataKeys!: string[];
 
@@ -73,17 +69,14 @@ export class CustomFormControlComponent implements OnInit {
 
   initData() {
     const init = (properties: Array<keyof IError>) => {
-
       properties.forEach(property => {
-        /*
-      Readable form of code for property='required' for the code below
-      if (this.required ||| this.required===null) {
-        this._data['required'] = this.required;
-        this.priority = false;
-       } else if (this.config.required) {
-        this._data['required'] = this._data['required'] ?? this.config.required;
-       }
-         */
+        /*Readable form of code for property='required' for the code below
+        if (this.required ||| this.required===null) {
+            this._data['required'] = this.required;
+            this.priority = false;
+        } else if (this.config.required) {
+            this._data['required'] = this._data['required'] ?? this.config.required;
+       }*/
         if (this[`${property}`] || this[`${property}`] === null) {
           this._data[`${property}`] = this[`${property}`];
           this.priority = false;
