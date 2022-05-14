@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ContentChild, Inject, InjectionToken, Input, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { FormControlName } from '@angular/forms';
-import { combineLatest, distinctUntilChanged, Observable, of, switchMap } from 'rxjs';
+import { combineLatest, distinctUntilChanged, Observable, of, switchMap, tap } from 'rxjs';
 
 export interface IError {
   required?: string | null,
@@ -67,18 +67,19 @@ export class CustomFormControlComponent implements OnInit {
   ngOnInit(): void {
     this.priority = this.priority ?? this.config.priority;
     this.onTouchedOnly = this.onTouchedOnly ?? this.config.onTouchedOnly;
-    this.init();
+    this.initData();
     this.formatInputData();
   }
 
-  init() {
-    const rule = (properties: Array<keyof IError>) => {
+  initData() {
+    const init = (properties: Array<keyof IError>) => {
 
       properties.forEach(property => {
         /*
-      Readable form of code for one property 'required'
-      if (this.required) {
+      Readable form of code for property='required' for the code below
+      if (this.required ||| this.required===null) {
         this._data['required'] = this.required;
+        this.priority = false;
        } else if (this.config.required) {
         this._data['required'] = this._data['required'] ?? this.config.required;
        }
@@ -92,7 +93,7 @@ export class CustomFormControlComponent implements OnInit {
       });
     };
 
-    rule(['required', 'email', 'max', 'maxLength', 'min', 'minLength', 'nullValidator', 'pattern', 'requiredTrue']);
+    init(['required', 'email', 'max', 'maxLength', 'min', 'minLength', 'nullValidator', 'pattern', 'requiredTrue']);
   }
 
   /** We need to make all the keys of errorMessages to be lowerCase for further processing. This is what we do in this function */
@@ -113,6 +114,22 @@ export class CustomFormControlComponent implements OnInit {
     this.matchFormErrorsWithInputErrorMessages();
   }
 
+  hasTwoObjectsSameProps(x: Object, y: Object): boolean {
+    let xProp: string[], yProp: string[];
+    try {
+      xProp = Object.getOwnPropertyNames(x);
+    } catch {
+      xProp = [];
+    }
+    try {
+      yProp = Object.getOwnPropertyNames(y);
+    } catch {
+      yProp = [];
+    }
+    if (xProp.length !== yProp.length) return false;
+    return xProp.every((prop: string) => yProp.includes(prop));
+  }
+
   matchFormErrorsWithInputErrorMessages() {
     // This observable is used to look any errors when the form is touched. This stream emits `true` at the start
     // if `this.onTouchOnly=false` and will only emit `true` after the control is touched if `this.onTouchOnly=true`.
@@ -126,12 +143,7 @@ export class CustomFormControlComponent implements OnInit {
 
     this.hasError$ = combineLatest(touched$, this.control.statusChanges!).pipe(
       switchMap(() => of(this.control.errors)),
-      distinctUntilChanged((x, y) => {
-        let xProp = Object.getOwnPropertyNames(x);
-        let yProp = Object.getOwnPropertyNames(y);
-        if (xProp.length !== yProp.length) return false;
-        return xProp.every(prop => yProp.includes(prop));
-      }),
+      distinctUntilChanged((x, y) => this.hasTwoObjectsSameProps(x as Object, y as Object)),
       switchMap(_ => of(
         this.dataKeys.reduce((acc, key) => {
           let accProps = Object.getOwnPropertyNames(acc);
