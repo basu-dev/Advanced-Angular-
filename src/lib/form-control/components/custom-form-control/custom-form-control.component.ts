@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, ContentChild, Inject, InjectionToken, Input, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { FormControlName } from '@angular/forms';
-import { combineLatest, distinctUntilChanged, Observable, of, switchMap, tap } from 'rxjs';
+import { combineLatest, distinctUntilChanged, Observable, of, switchMap } from 'rxjs';
 
 export interface IError {
   required?: string | null,
@@ -14,9 +14,19 @@ export interface IError {
   pattern?: string | null;
 }
 
-export interface IErrorConfig extends IError {
-  priority?: boolean,
-  onTouchedOnly?: boolean,
+export interface IErrorConfig {
+
+  required?: Function | string;
+  nullValidator?: Function | string;
+  requiredTrue?: Function | string;
+  min?: Function | string;
+  max?: Function | string;
+  minLength?: Function | string;
+  maxLength?: Function | string;
+  email?: Function | string;
+  pattern?: Function | string;
+  priority?: boolean;
+  onTouchedOnly?: boolean;
 }
 
 export const CUSTOM_FORM_CONFIG = new InjectionToken('Custom-Form-Config');
@@ -35,7 +45,7 @@ export class CustomFormControlComponent implements OnInit {
 
   /**Max Length count is used to show remaining letters in right hand side of form error area eg. [5 / 10] */
   @Input() maxLengthCount!: number;
-  @Input('errorMessages') _data: IError = <IError>{};
+  @Input('errorMessages') _messages: IError = <IError>{};
 
   @Input() required?: string | null;
   @Input() maxLength?: string | null;
@@ -55,33 +65,43 @@ export class CustomFormControlComponent implements OnInit {
   @Input() priority!: boolean;
   /** If onTouchedOnly flag is on, we only show errors after the form is touched and has errors */
   @Input() onTouchedOnly!: boolean;
+  @Input() data!: any;
 
-  data!: any;
+  messages!: any;
   hasError$!: Observable<any>;
-  dataKeys!: string[];
-
+  messagesKeys!: string[];
   ngOnInit(): void {
     this.priority = this.priority ?? this.config.priority;
     this.onTouchedOnly = this.onTouchedOnly ?? this.config.onTouchedOnly;
-    this.initData();
-    this.formatInputData();
+    this.initmessages();
+    this.formatInputmessages();
   }
 
-  initData() {
+  initmessages() {
     const init = (properties: Array<keyof IError>) => {
       properties.forEach(property => {
         /*Readable form of code for property='required' for the code below
         if (this.required ||| this.required===null) {
-            this._data['required'] = this.required;
+            this._messages['required'] = this.required;
             this.priority = false;
         } else if (this.config.required) {
-            this._data['required'] = this._data['required'] ?? this.config.required;
+           if (this.config.required instanceof Function) {
+            let configFn = this.config.required as Function;
+            this._messages.required = this._messages.required ?? configFn(this.data);
+          } else {
+            this._messages.required = this._messages.required ?? this.config.required as string;
+          }
        }*/
         if (this[`${property}`] || this[`${property}`] === null) {
-          this._data[`${property}`] = this[`${property}`];
+          this._messages[`${property}`] = this[`${property}`];
           this.priority = false;
         } else if (this.config[`${property}`]) {
-          this._data[`${property}`] = this._data[`${property}`] ?? this.config[`${property}`];
+          if (this.config[`${property}`] instanceof Function) {
+            let configFn = this.config[`${property}`] as Function;
+            this._messages[`${property}`] = this._messages[`${property}`] ?? configFn(this.data);
+          } else {
+            this._messages[`${property}`] = this._messages[`${property}`] ?? this.config[`${property}`] as string;
+          }
         }
       });
     };
@@ -90,20 +110,20 @@ export class CustomFormControlComponent implements OnInit {
   }
 
   /** We need to make all the keys of errorMessages to be lowerCase for further processing. This is what we do in this function */
-  formatInputData() {
+  formatInputmessages() {
     try {
-      this.data = <IError>{};
-      for (let [key, value] of Object.entries(this._data)) {
-        this.data[key.toLocaleLowerCase()] = value;
+      this.messages = <IError>{};
+      for (let [key, value] of Object.entries(this._messages)) {
+        this.messages[key.toLocaleLowerCase()] = value;
       }
-      this.dataKeys = Object.keys(this.data);
+      this.messagesKeys = Object.keys(this.messages);
     } catch {
-      this.dataKeys = [];
+      this.messagesKeys = [];
     }
   }
 
   ngAfterContentInit() {
-    if (!this.dataKeys.length) return;
+    if (!this.messagesKeys.length) return;
     this.matchFormErrorsWithInputErrorMessages();
   }
 
@@ -138,7 +158,7 @@ export class CustomFormControlComponent implements OnInit {
       switchMap(() => of(this.control.errors)),
       distinctUntilChanged((x, y) => this.hasTwoObjectsSameProps(x as Object, y as Object)),
       switchMap(_ => of(
-        this.dataKeys.reduce((acc, key) => {
+        this.messagesKeys.reduce((acc, key) => {
           let accProps = Object.getOwnPropertyNames(acc);
           // if priority is on => in case of multiple errors, we only use first error and make other errors null so that only higher priority error is shown in screen
           // else we will show all the errors
@@ -163,8 +183,8 @@ export class CustomFormControlComponent implements OnInit {
 export class GetValuePipe implements PipeTransform {
 
   transform(item: string, ...args: any[]): any {
-    let data = args[0];
-    return data[item];
+    let messages = args[0];
+    return messages[item];
   }
 }
 
