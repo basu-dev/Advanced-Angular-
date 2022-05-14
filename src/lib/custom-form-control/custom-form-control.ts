@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ContentChild, Inject, InjectionToken, Input, NgModule, OnInit, Pipe, PipeTransform } from '@angular/core';
+import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChild, Directive, ElementRef, Inject, InjectionToken, Input, NgModule, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { FormControlName } from '@angular/forms';
 import { combineLatest, distinctUntilChanged, Observable, of, switchMap } from 'rxjs';
 
@@ -32,17 +32,30 @@ export interface IErrorConfig {
 
 export const CUSTOM_FORM_CONFIG = new InjectionToken('Custom-Form-Config');
 
+@Directive({
+  selector: "[cLabel]"
+})
+export class CustomFormControlLabelDirective {
+
+  constructor(public el: ElementRef) {
+  }
+  ngOnInit() {
+    console.log(this.el);
+  }
+}
+
 @Component({
   selector: 'c-form-control',
   templateUrl: './custom-form-control.html',
   styleUrls: ['./custom-form-control.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CustomFormControlComponent implements OnInit {
+export class CustomFormControlComponent implements AfterContentInit {
 
   constructor(@Inject(CUSTOM_FORM_CONFIG) private config: IErrorConfig) { }
 
   @ContentChild(FormControlName) control!: FormControlName;
+  @ContentChild(CustomFormControlLabelDirective) labelRef!: CustomFormControlLabelDirective;
 
   /**Max Length count is used to show remaining letters in right hand side of form error area eg. [5 / 10] */
   @Input() maxLengthCount!: number;
@@ -71,11 +84,14 @@ export class CustomFormControlComponent implements OnInit {
   messages!: any;
   hasError$!: Observable<any>;
   messagesKeys!: string[];
-  ngOnInit(): void {
+
+  ngAfterContentInit() {
     this.priority = this.priority ?? this.config.priority;
     this.onTouchedOnly = this.onTouchedOnly ?? this.config.onTouchedOnly;
     this.initmessages();
     this.formatInputmessages();
+    if (!this.messagesKeys.length) return;
+    this.matchFormErrorsWithInputErrorMessages();
   }
 
   initmessages() {
@@ -99,7 +115,7 @@ export class CustomFormControlComponent implements OnInit {
         } else if (this.config[`${property}`]) {
           if (this.config[`${property}`] instanceof Function) {
             let configFn = this.config[`${property}`] as Function;
-            this._messages[`${property}`] = this._messages[`${property}`] ?? configFn(this.data);
+            this._messages[`${property}`] = this._messages[`${property}`] ?? configFn(this.labelRef.el.nativeElement.textContent, this.data);
           } else {
             this._messages[`${property}`] = this._messages[`${property}`] ?? this.config[`${property}`] as string;
           }
@@ -123,10 +139,6 @@ export class CustomFormControlComponent implements OnInit {
     }
   }
 
-  ngAfterContentInit() {
-    if (!this.messagesKeys.length) return;
-    this.matchFormErrorsWithInputErrorMessages();
-  }
 
   hasTwoObjectsSameProps(x: Object, y: Object): boolean {
     let xProp: string[], yProp: string[];
@@ -189,9 +201,12 @@ export class GetValuePipe implements PipeTransform {
   }
 }
 
+
+
 @NgModule({
   declarations: [
-    CustomFormControlComponent, GetValuePipe
+    CustomFormControlComponent, GetValuePipe,
+    CustomFormControlLabelDirective
   ],
   imports: [
     CommonModule,
@@ -205,6 +220,10 @@ export class GetValuePipe implements PipeTransform {
       }
     }
   ],
-  exports: [CustomFormControlComponent]
+  exports: [CustomFormControlComponent,
+    CustomFormControlLabelDirective
+  ]
+
+
 })
 export class CustomFormControlModule { }

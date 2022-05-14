@@ -1,6 +1,11 @@
 <form [formGroup]="form" class="form-group">
-    <label for="">Email</label>
-    <c-form-control>
-        <input type="email" class="form-control" formControlName="name">
+    <c-form-control [data]="{maxLength:20,minLength:5}">
+        <label cLabel for="">First Name</label>
+        <input class="form-control" formControlName="name">
+    </c-form-control>
+
+    <c-form-control pattern="Password doesn't match pattern">
+        <label cLabel>Password</label>
+        <input class="form-control" formControlName="password">
     </c-form-control>
 </form>

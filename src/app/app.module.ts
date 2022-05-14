@@ -36,12 +36,11 @@ import { CustomFormControlModule, CUSTOM_FORM_CONFIG, IErrorConfig } from 'src/l
     {
       provide: CUSTOM_FORM_CONFIG,
       useValue: <IErrorConfig>{
-        required: (name: any[]) => name && name[0] ? `${name[0]} is required` : 'This field is required',
-        email: "Please enter a valid email address",
-        maxLength: (data: any[]) => (data && data[0] && data[1]) ? `${data[0]} cannot exceed ${data[1]} characters` : "Value doesn't match maxLength criteria",
-        pattern: 'Pattern does\'nt match',
-        priority: false,
-        onTouchedOnly: false
+        onTouchedOnly: true,
+        email: 'Please enter a valid email',
+        required: (label: string) => label ? `${label} is required` : `It is required`,
+        minLength: (label: string, data: { minLength: number; }) => label && data ? `${label} should contain at least ${data.minLength} characters.` : `${label} doesn\'t match minimum length criteria.`,
+        maxLength: (label: string, data: { maxLength: number; }) => label && data ? `${label} cannot exceed ${data?.maxLength} characters.` : `${label} doesn\'t match maximum length criteria.`
       }
     }
   ],
