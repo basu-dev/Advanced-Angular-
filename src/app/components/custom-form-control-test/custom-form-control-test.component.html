@@ -4,8 +4,8 @@
         <input class="form-control" formControlName="name">
     </c-form-control>
 
-    <c-form-control pattern="Password doesn't match pattern">
-        <label cLabel>Password</label>
+    <c-form-control [data]="{minLength:10}">
+        <label cLabel class="mt-2 d-block">Password</label>
         <input class="form-control" formControlName="password">
     </c-form-control>
 </form>
