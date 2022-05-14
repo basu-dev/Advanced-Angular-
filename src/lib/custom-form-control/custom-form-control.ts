@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, ContentChild, Inject, InjectionToken, Input, OnInit, Pipe, PipeTransform } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, ContentChild, Inject, InjectionToken, Input, NgModule, OnInit, Pipe, PipeTransform } from '@angular/core';
 import { FormControlName } from '@angular/forms';
 import { combineLatest, distinctUntilChanged, Observable, of, switchMap } from 'rxjs';
 
@@ -33,8 +34,8 @@ export const CUSTOM_FORM_CONFIG = new InjectionToken('Custom-Form-Config');
 
 @Component({
   selector: 'c-form-control',
-  templateUrl: './custom-form-control.component.html',
-  styleUrls: ['./custom-form-control.component.scss'],
+  templateUrl: './custom-form-control.html',
+  styleUrls: ['./custom-form-control.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CustomFormControlComponent implements OnInit {
@@ -188,3 +189,22 @@ export class GetValuePipe implements PipeTransform {
   }
 }
 
+@NgModule({
+  declarations: [
+    CustomFormControlComponent, GetValuePipe
+  ],
+  imports: [
+    CommonModule,
+  ],
+  providers: [
+    {
+      provide: CUSTOM_FORM_CONFIG,
+      useValue: <IErrorConfig>{
+        priority: false,
+        onTouchedOnly: false
+      }
+    }
+  ],
+  exports: [CustomFormControlComponent]
+})
+export class CustomFormControlModule { }

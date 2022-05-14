@@ -1,10 +1,6 @@
 <form [formGroup]="form" class="form-group">
-    <label for="">Name</label>
-    <c-form-control [errorMessages]="{
-        required:'It is required',
-        maxLength:'Max length',
-        email:'Valid email'
-    }" [priority]="false">
-        <input class="form-control" formControlName="name">
+    <label for="">Email</label>
+    <c-form-control>
+        <input type="email" class="form-control" formControlName="name">
     </c-form-control>
 </form>

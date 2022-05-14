@@ -1,6 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { CustomFormControlComponent } from './custom-form-control.component';
+import { CustomFormControlComponent } from './custom-form-control';
 
 describe('CustomFormControlComponent', () => {
   let component: CustomFormControlComponent;
@@ -8,9 +8,9 @@ describe('CustomFormControlComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ CustomFormControlComponent ]
+      declarations: [CustomFormControlComponent]
     })
-    .compileComponents();
+      .compileComponents();
   });
 
   beforeEach(() => {

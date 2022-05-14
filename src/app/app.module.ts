@@ -12,8 +12,7 @@ import { TwoWayBindingModule } from './two-way-binding/two-way-binding.module';
 import { MediaMatchModule } from 'src/lib/media-match/media-match';
 import { CustomFormControlTestComponent } from './components/custom-form-control-test/custom-form-control-test.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { CustomFormControlModule } from 'src/lib/form-control/form-control.module';
-import { CUSTOM_FORM_CONFIG, IErrorConfig } from 'src/lib/form-control/components/custom-form-control/custom-form-control.component';
+import { CustomFormControlModule, CUSTOM_FORM_CONFIG, IErrorConfig } from 'src/lib/custom-form-control/custom-form-control';
 
 @NgModule({
   declarations: [
@@ -37,9 +36,11 @@ import { CUSTOM_FORM_CONFIG, IErrorConfig } from 'src/lib/form-control/component
     {
       provide: CUSTOM_FORM_CONFIG,
       useValue: <IErrorConfig>{
-        required: "This field is required",
+        required: (name: any[]) => name && name[0] ? `${name[0]} is required` : 'This field is required',
         email: "Please enter a valid email address",
-        priority: true,
+        maxLength: (data: any[]) => (data && data[0] && data[1]) ? `${data[0]} cannot exceed ${data[1]} characters` : "Value doesn't match maxLength criteria",
+        pattern: 'Pattern does\'nt match',
+        priority: false,
         onTouchedOnly: false
       }
     }
