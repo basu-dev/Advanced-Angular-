@@ -37,6 +37,7 @@ import { CustomFormControlModule, CUSTOM_FORM_CONFIG, IErrorConfig } from 'src/l
       provide: CUSTOM_FORM_CONFIG,
       useValue: <IErrorConfig>{
         onTouchedOnly: true,
+        errorTextColor: 'var(--text-danger)',
         addErrorClassToElement: true,
         email: 'Please enter a valid email',
         required: (label: string) => label ? `${label} is required` : `It is required`,

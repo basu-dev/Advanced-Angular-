@@ -16,7 +16,6 @@ export interface IError {
 }
 
 export interface IErrorConfig {
-
   required?: Function | string;
   nullValidator?: Function | string;
   requiredTrue?: Function | string;
@@ -30,7 +29,7 @@ export interface IErrorConfig {
   onTouchedOnly?: boolean;
   addErrorClassToElement?: boolean;
   errorClass?: string;
-
+  errorTextColor?: string;
 }
 
 export const CUSTOM_FORM_CONFIG = new InjectionToken('Custom-Form-Config');
@@ -52,7 +51,9 @@ export class CustomFormControlLabelDirective {
 })
 export class CustomFormControlComponent implements AfterContentInit {
 
-  ERROR_CLASS = 'c-control-error';
+  readonly ERROR_CLASS = 'c-control-error';
+  readonly ERROR_TEXT_COLOR = '#ee3e3e';
+  readonly ADD_ERROR_CLASS_TO_ELEMENT = true;
 
   constructor(@Inject(CUSTOM_FORM_CONFIG) private config: IErrorConfig) { }
 
@@ -83,6 +84,7 @@ export class CustomFormControlComponent implements AfterContentInit {
   /** If onTouchedOnly flag is on, we only show errors after the form is touched and has errors */
   @Input() onTouchedOnly!: boolean;
   @Input() addErrorClassToElement!: boolean;
+  @Input() errorTextColor!: string;
   @Input() data!: any;
 
   messages!: any;
@@ -90,13 +92,18 @@ export class CustomFormControlComponent implements AfterContentInit {
   messagesKeys!: string[];
 
   ngAfterContentInit() {
-    this.priority = this.priority ?? this.config.priority;
-    this.onTouchedOnly = this.onTouchedOnly ?? this.config.onTouchedOnly;
-    this.addErrorClassToElement = this.addErrorClassToElement ?? this.config.addErrorClassToElement ?? true;
-    this.initmessages();
+    this.init();
     this.formatInputmessages();
     if (!this.messagesKeys.length) return;
     this.matchFormErrorsWithInputErrorMessages();
+  }
+
+  init() {
+    this.priority = this.priority ?? this.config.priority;
+    this.onTouchedOnly = this.onTouchedOnly ?? this.config.onTouchedOnly;
+    this.addErrorClassToElement = this.addErrorClassToElement ?? this.config.addErrorClassToElement ?? this.ADD_ERROR_CLASS_TO_ELEMENT;
+    this.errorTextColor = this.errorTextColor ?? this.config.errorTextColor ?? this.ERROR_TEXT_COLOR;
+    this.initmessages();
   }
 
   initmessages() {
@@ -231,7 +238,8 @@ export class GetValuePipe implements PipeTransform {
       }
     }
   ],
-  exports: [CustomFormControlComponent,
+  exports: [
+    CustomFormControlComponent,
     CustomFormControlLabelDirective
   ]
 

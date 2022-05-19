@@ -4,10 +4,10 @@
   justify-content: space-between;
   margin-top: 0.3rem;
   .c-error-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
     padding: 3px;
-    .c-error {
-      color: #ee3e3e;
-    }
   }
   .c-counter {
     min-width: fit-content;
