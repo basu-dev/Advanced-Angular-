@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChild, Directive, ElementRef, Inject, InjectionToken, Input, NgModule, OnInit, Pipe, PipeTransform } from '@angular/core';
+import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChild, Directive, ElementRef, Inject, InjectionToken, Input, NgModule, Pipe, PipeTransform } from '@angular/core';
 import { FormControlName } from '@angular/forms';
-import { combineLatest, distinctUntilChanged, Observable, of, switchMap } from 'rxjs';
+import { combineLatest, distinctUntilChanged, Observable, of, switchMap, tap } from 'rxjs';
 
 export interface IError {
   required?: string | null,
@@ -28,6 +28,9 @@ export interface IErrorConfig {
   pattern?: Function | string;
   priority?: boolean;
   onTouchedOnly?: boolean;
+  addErrorClassToElement?: boolean;
+  errorClass?: string;
+
 }
 
 export const CUSTOM_FORM_CONFIG = new InjectionToken('Custom-Form-Config');
@@ -39,9 +42,6 @@ export class CustomFormControlLabelDirective {
 
   constructor(public el: ElementRef) {
   }
-  ngOnInit() {
-    console.log(this.el);
-  }
 }
 
 @Component({
@@ -52,9 +52,12 @@ export class CustomFormControlLabelDirective {
 })
 export class CustomFormControlComponent implements AfterContentInit {
 
+  ERROR_CLASS = 'c-control-error';
+
   constructor(@Inject(CUSTOM_FORM_CONFIG) private config: IErrorConfig) { }
 
   @ContentChild(FormControlName) control!: FormControlName;
+  @ContentChild(FormControlName, { read: ElementRef }) controlElement!: ElementRef;
   @ContentChild(CustomFormControlLabelDirective) labelRef!: CustomFormControlLabelDirective;
 
   /**Max Length count is used to show remaining letters in right hand side of form error area eg. [5 / 10] */
@@ -79,6 +82,7 @@ export class CustomFormControlComponent implements AfterContentInit {
   @Input() priority!: boolean;
   /** If onTouchedOnly flag is on, we only show errors after the form is touched and has errors */
   @Input() onTouchedOnly!: boolean;
+  @Input() addErrorClassToElement!: boolean;
   @Input() data!: any;
 
   messages!: any;
@@ -88,6 +92,7 @@ export class CustomFormControlComponent implements AfterContentInit {
   ngAfterContentInit() {
     this.priority = this.priority ?? this.config.priority;
     this.onTouchedOnly = this.onTouchedOnly ?? this.config.onTouchedOnly;
+    this.addErrorClassToElement = this.addErrorClassToElement ?? this.config.addErrorClassToElement ?? true;
     this.initmessages();
     this.formatInputmessages();
     if (!this.messagesKeys.length) return;
@@ -167,8 +172,17 @@ export class CustomFormControlComponent implements AfterContentInit {
       }
     })).pipe(distinctUntilChanged());
 
-    this.hasError$ = combineLatest(touched$, this.control.statusChanges!).pipe(
+    this.hasError$ = combineLatest([touched$, this.control.statusChanges!]).pipe(
       switchMap(() => of(this.control.errors)),
+      tap(errors => {
+        if (!this.addErrorClassToElement) return;
+        // adding error class on the element
+        if (errors) {
+          this.controlElement.nativeElement.classList.add(this.ERROR_CLASS);
+        } else {
+          this.controlElement.nativeElement.classList.remove(this.ERROR_CLASS);
+        }
+      }),
       distinctUntilChanged((x, y) => this.hasTwoObjectsSameProps(x as Object, y as Object)),
       switchMap(_ => of(
         this.messagesKeys.reduce((acc, key) => {
@@ -195,13 +209,10 @@ export class CustomFormControlComponent implements AfterContentInit {
 })
 export class GetValuePipe implements PipeTransform {
 
-  transform(item: string, ...args: any[]): any {
-    let messages = args[0];
+  transform(item: string, messages: any): any {
     return messages[item];
   }
 }
-
-
 
 @NgModule({
   declarations: [
