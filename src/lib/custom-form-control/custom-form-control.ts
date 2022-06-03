@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChild, Directive, ElementRef, Inject, InjectionToken, Input, NgModule, Pipe, PipeTransform } from '@angular/core';
+import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChild, Directive, ElementRef, Inject, InjectionToken, Input, ModuleWithProviders, NgModule, Pipe, PipeTransform } from '@angular/core';
 import { FormControlName } from '@angular/forms';
 import { combineLatest, distinctUntilChanged, Observable, of, switchMap, tap } from 'rxjs';
 
@@ -234,6 +234,7 @@ export class GetValuePipe implements PipeTransform {
       provide: CUSTOM_FORM_CONFIG,
       useValue: <IErrorConfig>{
         priority: false,
+        required: 'This is required dude!',
         onTouchedOnly: false
       }
     }
@@ -245,4 +246,14 @@ export class GetValuePipe implements PipeTransform {
 
 
 })
-export class CustomFormControlModule { }
+export class CustomFormControlModule {
+  static withConfig(config: IErrorConfig): ModuleWithProviders<CustomFormControlModule> {
+    return {
+      ngModule: CustomFormControlModule,
+      providers: [{
+        provide: CUSTOM_FORM_CONFIG,
+        useValue: config
+      }]
+    };
+  }
+}

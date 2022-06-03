@@ -28,24 +28,20 @@ import { CustomFormControlModule, CUSTOM_FORM_CONFIG, IErrorConfig } from 'src/l
     FormPersistenceModule,
     HeightCalculateModule,
     BroadcastChannelModule,
-    CustomFormControlModule,
+    CustomFormControlModule.withConfig(<IErrorConfig>{
+      onTouchedOnly: true,
+      errorTextColor: 'var(--text-danger)',
+      addErrorClassToElement: true,
+      email: 'Please enter a valid email',
+      required: (label: string) => label ? `${label} is required` : `It is required`,
+      pattern: (label: string) => label ? `${label} doesn't match required pattern.` : `Doesn't match required pattern`,
+      minLength: (label: string, data: { minLength: number; }) => label && data ? `${label} should contain at least ${data.minLength} characters.` : `${label} doesn\'t match minimum length criteria.`,
+      maxLength: (label: string, data: { maxLength: number; }) => label && data ? `${label} cannot exceed more than ${data?.maxLength} characters.` : `${label} doesn\'t match maximum length criteria.`
+    }),
     TwoWayBindingModule,
     ReactiveFormsModule
   ],
   providers: [
-    {
-      provide: CUSTOM_FORM_CONFIG,
-      useValue: <IErrorConfig>{
-        onTouchedOnly: true,
-        errorTextColor: 'var(--text-danger)',
-        addErrorClassToElement: true,
-        email: 'Please enter a valid email',
-        required: (label: string) => label ? `${label} is required` : `It is required`,
-        pattern: (label: string) => label ? `${label} doesn't match required pattern.` : `Doesn't match required pattern`,
-        minLength: (label: string, data: { minLength: number; }) => label && data ? `${label} should contain at least ${data.minLength} characters.` : `${label} doesn\'t match minimum length criteria.`,
-        maxLength: (label: string, data: { maxLength: number; }) => label && data ? `${label} cannot exceed more than ${data?.maxLength} characters.` : `${label} doesn\'t match maximum length criteria.`
-      }
-    }
   ],
   bootstrap: [AppComponent]
 })
