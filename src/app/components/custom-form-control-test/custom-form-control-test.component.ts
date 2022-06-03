@@ -1,12 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
-
-
 @Component({
   selector: 'app-custom-form-control-test',
   templateUrl: './custom-form-control-test.component.html',
-  styleUrls: ['./custom-form-control-test.component.scss']
+  styleUrls: ['./custom-form-control-test.component.scss'],
 })
 export class CustomFormControlTestComponent implements OnInit {
 
@@ -25,5 +23,4 @@ export class CustomFormControlTestComponent implements OnInit {
       ]]
     });
   }
-
 }

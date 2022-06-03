@@ -16,28 +16,47 @@ function windowResize() {
   );
 }
 
-export interface IMatchMedia {
-  xs?: string;
-  sm?: string;
-  md?: string;
-  lg?: string;
-  xl?: string;
-}
+type IMatchMedia = {
+  [P in keyof typeof breakPoints]?: any
+};
+
 
 export class MediaMatchPipeBase implements PipeTransform {
-  transform(value: IMatchMedia, ...args: string[]): Observable<any> {
+
+  transform<T>(value: IMatchMedia, ...args: any[]): T {
+    let matched = false;
+    let globalKey = Object.keys(breakPoints)[0] as keyof IMatchMedia;
+    for (let key of Object.keys(value)) {
+      let newKey = key as keyof IMatchMedia;
+      if (matchMedia(breakPoints[newKey]).matches) {
+        globalKey = newKey;
+        matched = true;
+        break;
+      } else {
+        matched = false;
+      }
+    };
+    if (matched) {
+      return value[globalKey];
+    }
+    else {
+      return args[0];
+    }
+  }
+}
+export class MediaMatchAsyncPipeBase implements PipeTransform {
+  transform<T>(value: IMatchMedia, ...args: any[]): Observable<T> {
     return windowResize().pipe(
       switchMap(_ => {
         let matched = false;
-        let globalKey: keyof IMatchMedia = 'xs';
+        let globalKey = Object.keys(breakPoints)[0] as keyof IMatchMedia;
         for (let key of Object.keys(value)) {
-          let newKey: keyof IMatchMedia = key as keyof IMatchMedia;
+          let newKey = key as keyof IMatchMedia;
           if (matchMedia(breakPoints[newKey]).matches) {
             globalKey = newKey;
             matched = true;
             break;
           } else {
-            globalKey = 'xs';
             matched = false;
           }
         };
@@ -52,6 +71,19 @@ export class MediaMatchPipeBase implements PipeTransform {
     );
   }
 
+}
+@Pipe({
+  name: 'mediaMatchAsync'
+})
+export class MediaMatchAsyncPipe extends MediaMatchAsyncPipeBase implements PipeTransform {
+  constructor() { super(); }
+}
+
+@Pipe({
+  name: 'mediaMatchAsyncDefault'
+})
+export class MediaMatchAsyncDefaultPipe extends MediaMatchPipeBase implements PipeTransform {
+  constructor() { super(); }
 }
 
 @Pipe({
@@ -100,16 +132,40 @@ export class MediaMatchDirective {
   }
 }
 
+@Directive({
+  selector: '[mediaMatchRaw]'
+})
+export class MediaMatchRawDirective {
+
+  @Input() mediaMatchRaw!: string;
+
+  constructor(private tpl: TemplateRef<any>,
+    private vcr: ViewContainerRef
+  ) { }
+
+  ngOnInit() {
+    mediaQueryChange(this.mediaMatchRaw).subscribe(
+      match => {
+        if (match) {
+          this.vcr.createEmbeddedView(this.tpl);
+        } else {
+          this.vcr.clear();
+        }
+      }
+    );
+  }
+}
+
+const declarations = [
+  MediaMatchDirective,
+  MediaMatchRawDirective,
+  MediaMatchPipe,
+  MediaMatchDefaultPipe,
+  MediaMatchAsyncPipe,
+  MediaMatchAsyncDefaultPipe,
+];
 @NgModule({
-  declarations: [
-    MediaMatchDirective,
-    MediaMatchPipe,
-    MediaMatchDefaultPipe
-  ],
-  exports: [
-    MediaMatchPipe,
-    MediaMatchDefaultPipe,
-    MediaMatchDirective,
-  ]
+  declarations,
+  exports: declarations
 })
 export class MediaMatchModule { }
