@@ -7,20 +7,29 @@ import { mediaQueryChange } from "../helper";
 })
 export class MediaMatchDirective {
 
-    @Input() mediaMatch!: keyof typeof breakPoints;
+    @Input() mediaMatch!: keyof typeof breakPoints | Array<keyof typeof breakPoints>;
+    @Input() mediaMatchElse!: TemplateRef<unknown>;
 
     constructor(private tpl: TemplateRef<any>,
         private vcr: ViewContainerRef
     ) { }
 
     ngOnInit() {
-        mediaQueryChange(breakPoints[this.mediaMatch]).subscribe(
+        let query: string;
+        if (Array.isArray(this.mediaMatch)) {
+            query = this.mediaMatch.map(value => breakPoints[value]).join('and');
+        } else {
+            query = breakPoints[this.mediaMatch];
+        }
+        mediaQueryChange(query).subscribe(
             match => {
+                this.vcr.clear();
                 if (match) {
                     this.vcr.createEmbeddedView(this.tpl);
-                } else {
-                    this.vcr.clear();
+                } else if (this.mediaMatchElse) {
+                    this.vcr.createEmbeddedView(this.mediaMatchElse);
                 }
+
             }
         );
     }

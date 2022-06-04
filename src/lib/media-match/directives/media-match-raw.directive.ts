@@ -7,6 +7,7 @@ import { mediaQueryChange } from "../helper";
 export class MediaMatchRawDirective {
 
     @Input() mediaMatchRaw!: string;
+    @Input() mediaMatchRawElse!: TemplateRef<unknown>;
 
     constructor(private tpl: TemplateRef<any>,
         private vcr: ViewContainerRef
@@ -15,10 +16,12 @@ export class MediaMatchRawDirective {
     ngOnInit() {
         mediaQueryChange(this.mediaMatchRaw).subscribe(
             match => {
+                this.vcr.clear();
                 if (match) {
                     this.vcr.createEmbeddedView(this.tpl);
-                } else {
-                    this.vcr.clear();
+                }
+                else if (this.mediaMatchRawElse) {
+                    this.vcr.createEmbeddedView(this.mediaMatchRawElse);
                 }
             }
         );
