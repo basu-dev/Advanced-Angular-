@@ -1,5 +1,5 @@
 import { PipeTransform } from "@angular/core";
-import { breakPoints, IMatchMedia } from "../breakpoints";
+import { breakPoints, IMatchMedia } from "../../breakpoints";
 
 export class MediaMatchPipeBase implements PipeTransform {
 

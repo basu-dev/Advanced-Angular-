@@ -8,6 +8,9 @@ import { Component, OnInit } from '@angular/core';
 export class MatchMediaTestComponent implements OnInit {
 
   constructor() { }
+  a = {
+    name: 'basu'
+  };
 
   ngOnInit(): void {
   }

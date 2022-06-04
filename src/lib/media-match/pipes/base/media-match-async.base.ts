@@ -1,7 +1,7 @@
 import { PipeTransform } from "@angular/core";
 import { Observable, switchMap, of } from "rxjs";
-import { breakPoints, IMatchMedia } from "../breakpoints";
-import { windowResize } from "../helper";
+import { breakPoints, IMatchMedia } from "../../breakpoints";
+import { windowResize } from "../../helper";
 
 export class MediaMatchAsyncPipeBase implements PipeTransform {
     transform<T>(value: IMatchMedia, ...args: any[]): Observable<T> {

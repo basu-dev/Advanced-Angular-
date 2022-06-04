@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from "@angular/core";
-import { MediaMatchAsyncPipeBase } from "./media-match-async.base";
+import { MediaMatchAsyncPipeBase } from "./base/media-match-async.base";
 
 @Pipe({
     name: 'mediaMatchAsync'
