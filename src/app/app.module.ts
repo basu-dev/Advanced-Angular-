@@ -9,7 +9,7 @@ import { MatchMediaTestComponent } from './components/match-media-test/match-med
 import { FormPersistenceModule } from './form-persistence/form-persistence.module';
 import { HeightCalculateModule } from '../lib/height-calculate/height-calculate';
 import { TwoWayBindingModule } from './two-way-binding/two-way-binding.module';
-import { MediaMatchModule } from 'src/lib/media-match/media-match';
+import { MediaMatchModule } from 'src/lib/media-match/media-match.module';
 import { CustomFormControlTestComponent } from './components/custom-form-control-test/custom-form-control-test.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CustomFormControlModule, CUSTOM_FORM_CONFIG, IErrorConfig } from 'src/lib/custom-form-control/custom-form-control';
