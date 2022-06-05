@@ -1,4 +1,5 @@
 import { Directive, Input, TemplateRef, ViewContainerRef } from "@angular/core";
+import { Subject, takeUntil } from "rxjs";
 import { breakPoints } from "../breakpoints";
 import { mediaQueryChange } from "../helper";
 
@@ -6,6 +7,8 @@ import { mediaQueryChange } from "../helper";
     selector: '[mediaMatch]'
 })
 export class MediaMatchDirective {
+
+    private _destroy$ = new Subject<void>();
 
     @Input() mediaMatch!: keyof typeof breakPoints | Array<keyof typeof breakPoints>;
     @Input() mediaMatchElse!: TemplateRef<unknown>;
@@ -21,17 +24,23 @@ export class MediaMatchDirective {
         } else {
             query = breakPoints[this.mediaMatch];
         }
-        mediaQueryChange(query).subscribe(
-            match => {
-                this.vcr.clear();
-                if (match) {
-                    this.vcr.createEmbeddedView(this.tpl);
-                } else if (this.mediaMatchElse) {
-                    this.vcr.createEmbeddedView(this.mediaMatchElse);
-                }
+        mediaQueryChange(query).
+            pipe(takeUntil(this._destroy$))
+            .subscribe(
+                match => {
+                    this.vcr.clear();
+                    if (match) {
+                        this.vcr.createEmbeddedView(this.tpl);
+                    } else if (this.mediaMatchElse) {
+                        this.vcr.createEmbeddedView(this.mediaMatchElse);
+                    }
 
-            }
-        );
+                }
+            );
+    }
+
+    ngOnDestroy() {
+        this._destroy$.next();
     }
 }
 
