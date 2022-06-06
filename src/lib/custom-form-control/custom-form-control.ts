@@ -1,9 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChild, Directive, ElementRef, Inject, InjectionToken, Input, ModuleWithProviders, NgModule, Pipe, PipeTransform } from '@angular/core';
+import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChild, Directive, ElementRef, Inject, InjectionToken, Input, ModuleWithProviders, NgModule, Optional, Pipe, PipeTransform } from '@angular/core';
 import { FormControlName } from '@angular/forms';
 import { combineLatest, distinctUntilChanged, Observable, of, switchMap, tap } from 'rxjs';
-
-export interface IError {
+interface IError {
   required?: string | null,
   nullValidator?: string | null,
   requiredTrue?: string | null,
@@ -32,7 +31,7 @@ export interface IErrorConfig {
   errorTextColor?: string;
 }
 
-export const CUSTOM_FORM_CONFIG = new InjectionToken('Custom-Form-Config');
+const CUSTOM_FORM_CONFIG = new InjectionToken('Custom-Form-Config');
 
 @Directive({
   selector: "[cLabel]"
@@ -42,7 +41,6 @@ export class CustomFormControlLabelDirective {
   constructor(public el: ElementRef) {
   }
 }
-
 @Component({
   selector: 'c-form-control',
   templateUrl: './custom-form-control.html',
@@ -50,12 +48,15 @@ export class CustomFormControlLabelDirective {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CustomFormControlComponent implements AfterContentInit {
-
+  // Default config
   readonly ERROR_CLASS = 'c-control-error';
   readonly ERROR_TEXT_COLOR = '#ee3e3e';
   readonly ADD_ERROR_CLASS_TO_ELEMENT = true;
+  readonly PRIORITY = false;
+  readonly ON_TOUCHED_ONLY = false;
 
-  constructor(@Inject(CUSTOM_FORM_CONFIG) private config: IErrorConfig) { }
+  constructor(@Inject(CUSTOM_FORM_CONFIG) @Optional() private config: IErrorConfig) {
+  }
 
   @ContentChild(FormControlName) control!: FormControlName;
   @ContentChild(FormControlName, { read: ElementRef }) controlElement!: ElementRef;
@@ -99,10 +100,10 @@ export class CustomFormControlComponent implements AfterContentInit {
   }
 
   init() {
-    this.priority = this.priority ?? this.config.priority;
-    this.onTouchedOnly = this.onTouchedOnly ?? this.config.onTouchedOnly;
-    this.addErrorClassToElement = this.addErrorClassToElement ?? this.config.addErrorClassToElement ?? this.ADD_ERROR_CLASS_TO_ELEMENT;
-    this.errorTextColor = this.errorTextColor ?? this.config.errorTextColor ?? this.ERROR_TEXT_COLOR;
+    this.priority = this.priority ?? this.config?.priority ?? this.PRIORITY;
+    this.onTouchedOnly = this.onTouchedOnly ?? this.config?.onTouchedOnly ?? this.ON_TOUCHED_ONLY;
+    this.addErrorClassToElement = this.addErrorClassToElement ?? this.config?.addErrorClassToElement ?? this.ADD_ERROR_CLASS_TO_ELEMENT;
+    this.errorTextColor = this.errorTextColor ?? this.config?.errorTextColor ?? this.ERROR_TEXT_COLOR;
     this.initmessages();
   }
 
@@ -113,18 +114,18 @@ export class CustomFormControlComponent implements AfterContentInit {
         if (this.required ||| this.required===null) {
             this._messages['required'] = this.required;
             this.priority = false;
-        } else if (this.config.required) {
-           if (this.config.required instanceof Function) {
-            let configFn = this.config.required as Function;
+        } else if (this.config?.required) {
+           if (this.config?.required instanceof Function) {
+            let configFn = this.config?.required as Function;
             this._messages.required = this._messages.required ?? configFn(this.data);
           } else {
-            this._messages.required = this._messages.required ?? this.config.required as string;
+            this._messages.required = this._messages.required ?? this.config?.required as string;
           }
        }*/
         if (this[`${property}`] || this[`${property}`] === null) {
           this._messages[`${property}`] = this[`${property}`];
           this.priority = false;
-        } else if (this.config[`${property}`]) {
+        } else if (this.config && this.config[`${property}`]) {
           if (this.config[`${property}`] instanceof Function) {
             let configFn = this.config[`${property}`] as Function;
             this._messages[`${property}`] = this._messages[`${property}`] ?? configFn(this.labelRef.el.nativeElement.textContent, this.data);
@@ -230,14 +231,6 @@ export class GetValuePipe implements PipeTransform {
     CommonModule,
   ],
   providers: [
-    {
-      provide: CUSTOM_FORM_CONFIG,
-      useValue: <IErrorConfig>{
-        priority: false,
-        required: 'This is required dude!',
-        onTouchedOnly: false
-      }
-    }
   ],
   exports: [
     CustomFormControlComponent,
@@ -247,13 +240,30 @@ export class GetValuePipe implements PipeTransform {
 
 })
 export class CustomFormControlModule {
-  static withConfig(config: IErrorConfig): ModuleWithProviders<CustomFormControlModule> {
+  private static config: IErrorConfig;
+
+  static rootConfig(config: IErrorConfig): ModuleWithProviders<CustomFormControlModule> {
+    if (CustomFormControlModule.config) throw new Error("CustomFormControlModule.rootConfig() method cannot be called more than once in an application. Use CustomFormControlModule.childConfig() method if you want to pass extra configuration.");
+    CustomFormControlModule.config = config;
     return {
       ngModule: CustomFormControlModule,
       providers: [{
         provide: CUSTOM_FORM_CONFIG,
         useValue: config
-      }]
+      }
+      ]
     };
   }
+
+  static childConfig(config: IErrorConfig): ModuleWithProviders<CustomFormControlModule> {
+    return {
+      ngModule: CustomFormControlModule,
+      providers: [{
+        provide: CUSTOM_FORM_CONFIG,
+        useValue: { ...CustomFormControlModule.config, ...config }
+      }
+      ]
+    };
+  }
+
 }
