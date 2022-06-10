@@ -75,6 +75,7 @@ export class CustomFormControlComponent implements AfterContentInit {
   @Input() pattern?: string | null;
   @Input() requiredTrue?: string | null;
   @Input() nullValidator?: string | null;
+  @Input() label?: string | null;
 
   /** if priority is true => in case of multiple errors, we only show first error and make other errors null so that only higher priority error is shown in screen
   * else we will show all the errors
@@ -128,7 +129,7 @@ export class CustomFormControlComponent implements AfterContentInit {
         } else if (this.config && this.config[`${property}`]) {
           if (this.config[`${property}`] instanceof Function) {
             let configFn = this.config[`${property}`] as Function;
-            this._messages[`${property}`] = this._messages[`${property}`] ?? configFn(this.labelRef.el.nativeElement.textContent, this.data);
+            this._messages[`${property}`] = this._messages[`${property}`] ?? configFn(this.labelRef ? this.labelRef.el.nativeElement.textContent : this.label, this.data);
           } else {
             this._messages[`${property}`] = this._messages[`${property}`] ?? this.config[`${property}`] as string;
           }
@@ -230,14 +231,10 @@ export class GetValuePipe implements PipeTransform {
   imports: [
     CommonModule,
   ],
-  providers: [
-  ],
   exports: [
     CustomFormControlComponent,
     CustomFormControlLabelDirective
   ]
-
-
 })
 export class CustomFormControlModule {
   private static config: IErrorConfig;

@@ -1,7 +1,7 @@
 <ng-content></ng-content>
 <div class="c-additions">
-    <div class="c-error-container">
-        <ng-container *ngIf="(hasError$ | async) as hasError">
+    <div class="c-error-container" *ngIf="(hasError$ | async) as hasError;else emptyDiv">
+        <ng-container>
             <ng-container *ngFor="let errorType of messagesKeys">
                 <div [style.color]="errorTextColor" class="c-error" *ngIf="hasError[errorType]">
                     {{errorType | fromObject:messages}}
@@ -24,3 +24,6 @@
 
     </div>
 </div>
+<ng-template #emptyDiv>
+    <div></div>
+</ng-template>
