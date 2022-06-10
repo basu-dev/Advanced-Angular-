@@ -4,6 +4,8 @@
 <!-- <app-broadcast-channel-test></app-broadcast-channel-test> -->
 <!-- <app-two-way-binding-test></app-two-way-binding-test> -->
 <app-custom-form-control-test></app-custom-form-control-test>
-<div *appContextTest="obj as ob">
-    {{ob.names}}
+<div [valueA]="obj">
+    <ng-template pTemplate [templateType]="obj" let-item>
+        {{item.name}}
+    </ng-template>
 </div>

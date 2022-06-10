@@ -13,7 +13,7 @@ import { MediaMatchModule } from 'src/lib/media-match/media-match.module';
 import { CustomFormControlTestComponent } from './components/custom-form-control-test/custom-form-control-test.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CustomFormControlModule, IErrorConfig } from 'src/lib/custom-form-control/custom-form-control';
-import { ContextTestDirective } from './context-test.directive';
+import { StructuralDirectiveModule } from 'src/lib/structural-directive/structural-directive.module';
 
 @NgModule({
   declarations: [
@@ -21,7 +21,6 @@ import { ContextTestDirective } from './context-test.directive';
     HeightCalculateTestComponent,
     MatchMediaTestComponent,
     CustomFormControlTestComponent,
-    ContextTestDirective
   ],
   imports: [
     BrowserModule,
@@ -41,6 +40,7 @@ import { ContextTestDirective } from './context-test.directive';
       maxLength: (label: string, data: { maxLength: number; }) => label && data ? `${label} cannot exceed more than ${data?.maxLength} characters.` : `${label} doesn\'t match maximum length criteria.`
     }),
     TwoWayBindingModule,
+    StructuralDirectiveModule,
     ReactiveFormsModule
   ],
   providers: [
