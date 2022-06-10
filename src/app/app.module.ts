@@ -12,14 +12,16 @@ import { TwoWayBindingModule } from './two-way-binding/two-way-binding.module';
 import { MediaMatchModule } from 'src/lib/media-match/media-match.module';
 import { CustomFormControlTestComponent } from './components/custom-form-control-test/custom-form-control-test.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { CustomFormControlModule, CUSTOM_FORM_CONFIG, IErrorConfig } from 'src/lib/custom-form-control/custom-form-control';
+import { CustomFormControlModule, IErrorConfig } from 'src/lib/custom-form-control/custom-form-control';
+import { ContextTestDirective } from './context-test.directive';
 
 @NgModule({
   declarations: [
     AppComponent,
     HeightCalculateTestComponent,
     MatchMediaTestComponent,
-    CustomFormControlTestComponent
+    CustomFormControlTestComponent,
+    ContextTestDirective
   ],
   imports: [
     BrowserModule,
@@ -28,7 +30,7 @@ import { CustomFormControlModule, CUSTOM_FORM_CONFIG, IErrorConfig } from 'src/l
     FormPersistenceModule,
     HeightCalculateModule,
     BroadcastChannelModule,
-    CustomFormControlModule.withConfig(<IErrorConfig>{
+    CustomFormControlModule.rootConfig(<IErrorConfig>{
       onTouchedOnly: true,
       errorTextColor: 'var(--text-danger)',
       addErrorClassToElement: true,
