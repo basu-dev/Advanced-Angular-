@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChild, Directive, ElementRef, Inject, InjectionToken, Input, ModuleWithProviders, NgModule, Optional, Pipe, PipeTransform } from '@angular/core';
 import { FormControlName } from '@angular/forms';
-import { combineLatest, distinctUntilChanged, Observable, of, switchMap, tap } from 'rxjs';
+import { Observable, combineLatest, of } from 'rxjs';
+import { distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 interface IError {
   required?: string | null,
   nullValidator?: string | null,
@@ -24,7 +25,6 @@ export interface IErrorConfig {
   maxLength?: Function | string;
   email?: Function | string;
   pattern?: Function | string;
-  priority?: boolean;
   onTouchedOnly?: boolean;
   addErrorClassToElement?: boolean;
   errorClass?: string;
@@ -52,10 +52,9 @@ export class CustomFormControlComponent implements AfterContentInit {
   readonly ERROR_CLASS = 'c-control-error';
   readonly ERROR_TEXT_COLOR = '#ee3e3e';
   readonly ADD_ERROR_CLASS_TO_ELEMENT = true;
-  readonly PRIORITY = false;
   readonly ON_TOUCHED_ONLY = false;
 
-  constructor(@Inject(CUSTOM_FORM_CONFIG) @Optional() private config: IErrorConfig) {
+  constructor(@Inject(CUSTOM_FORM_CONFIG) @Optional() public config: IErrorConfig) {
   }
 
   @ContentChild(FormControlName) control!: FormControlName;
@@ -65,6 +64,12 @@ export class CustomFormControlComponent implements AfterContentInit {
   /**Max Length count is used to show remaining letters in right hand side of form error area eg. [5 / 10] */
   @Input() maxLengthCount!: number;
   @Input('errorMessages') _messages: IError = <IError>{};
+  /*
+  User can pass one object of errormessages as well in stead of different input properties
+   Eg  of errorMessages=>
+    
+    <c-form-control [errorMessages]="{required:'this field is required',maxLength:'Name should not exceed 10 characters'}"></c-form-control>"
+  */
 
   @Input() required?: string | null;
   @Input() maxLength?: string | null;
@@ -77,21 +82,16 @@ export class CustomFormControlComponent implements AfterContentInit {
   @Input() nullValidator?: string | null;
   @Input() label?: string | null;
 
-  /** if priority is true => in case of multiple errors, we only show first error and make other errors null so that only higher priority error is shown in screen
-  * else we will show all the errors
-  * It only works if you provide all the validators in object form. If you pass any of the error message as normal input, we cannot determine
-  * which error to show and which not in case of two errors occuring at same time. In that case priority is automatically set to false.
-  **/
-  @Input() priority!: boolean;
   /** If onTouchedOnly flag is on, we only show errors after the form is touched and has errors */
   @Input() onTouchedOnly!: boolean;
   @Input() addErrorClassToElement!: boolean;
   @Input() errorTextColor!: string;
+  // This data is passed to functions passed in config object so that user can use the data in their own custom error messages
   @Input() data!: any;
 
-  messages!: any;
+  messages!: any; // Actuall its type is IError
   hasError$!: Observable<any>;
-  messagesKeys!: string[];
+  messagesKeys!: string[]; // Actually it is [keyof IError][]
 
   ngAfterContentInit() {
     this.init();
@@ -101,7 +101,6 @@ export class CustomFormControlComponent implements AfterContentInit {
   }
 
   init() {
-    this.priority = this.priority ?? this.config?.priority ?? this.PRIORITY;
     this.onTouchedOnly = this.onTouchedOnly ?? this.config?.onTouchedOnly ?? this.ON_TOUCHED_ONLY;
     this.addErrorClassToElement = this.addErrorClassToElement ?? this.config?.addErrorClassToElement ?? this.ADD_ERROR_CLASS_TO_ELEMENT;
     this.errorTextColor = this.errorTextColor ?? this.config?.errorTextColor ?? this.ERROR_TEXT_COLOR;
@@ -109,9 +108,18 @@ export class CustomFormControlComponent implements AfterContentInit {
   }
 
   initmessages() {
+    // In this method we populate _message object from the input properties and  and glogal config.
     const init = (properties: Array<keyof IError>) => {
       properties.forEach(property => {
-        /*Readable form of code for property='required' for the code below
+
+        // We created self object from this keyboard just for making it work in any tsconfig file. If we didn't create self object it would not work in some config
+        let self = this as {
+          [key: string]: any;
+          _messages: any;
+          config: { [key: string]: any; };
+          labelRef: CustomFormControlLabelDirective;
+        };
+        /*Readable form of code for property='required' for the code below with replacing self with this
         if (this.required ||| this.required===null) {
             this._messages['required'] = this.required;
             this.priority = false;
@@ -123,15 +131,16 @@ export class CustomFormControlComponent implements AfterContentInit {
             this._messages.required = this._messages.required ?? this.config?.required as string;
           }
        }*/
-        if (this[`${property}`] || this[`${property}`] === null) {
-          this._messages[`${property}`] = this[`${property}`];
-          this.priority = false;
-        } else if (this.config && this.config[`${property}`]) {
-          if (this.config[`${property}`] instanceof Function) {
-            let configFn = this.config[`${property}`] as Function;
-            this._messages[`${property}`] = this._messages[`${property}`] ?? configFn(this.labelRef ? this.labelRef.el.nativeElement.textContent : this.label, this.data);
+
+        // We are using this syntax.. so that we do not need to repeat this same line of code for all the input properties 
+        if (self[`${property}`] || self[`${property}`] === null) {
+          self._messages[`${property}`] = self[`${property}`];
+        } else if (self.config && self.config[`${property}`]) {
+          if (self.config[`${property}`] instanceof Function) {
+            let configFn = self.config[`${property}`] as Function;
+            self._messages[`${property}`] = self._messages[`${property}`] ?? configFn(this.labelRef ? self.labelRef.el.nativeElement.textContent : this.label, this.data);
           } else {
-            this._messages[`${property}`] = this._messages[`${property}`] ?? this.config[`${property}`] as string;
+            self._messages[`${property}`] = self._messages[`${property}`] ?? self.config[`${property}`] as string;
           }
         }
       });
@@ -195,16 +204,7 @@ export class CustomFormControlComponent implements AfterContentInit {
       distinctUntilChanged((x, y) => this.hasTwoObjectsSameProps(x as Object, y as Object)),
       switchMap(_ => of(
         this.messagesKeys.reduce((acc, key) => {
-          let accProps = Object.getOwnPropertyNames(acc);
-          // if priority is on => in case of multiple errors, we only use first error and make other errors null so that only higher priority error is shown in screen
-          // else we will show all the errors
-          if (this.priority) {
-            /** It is true if one of the errors is already true, which if true we make other error values null so that only one error is shown */
-            let alreadyOne = accProps.length && accProps.some(prop => acc[prop]);
-            acc[key] = alreadyOne ? null : this.control.errors ? this.control.errors[key] : null;
-          } else {
-            acc[key] = this.control.errors ? this.control.errors[key] : null;
-          }
+          acc[key] = this.control.errors ? this.control.errors[key] : null;
           return acc;
         }, <any>{})
       )),
