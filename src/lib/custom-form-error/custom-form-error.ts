@@ -42,12 +42,12 @@ export class CustomFormControlLabelDirective {
   }
 }
 @Component({
-  selector: 'c-form-control',
-  templateUrl: './custom-form-control.html',
-  styleUrls: ['./custom-form-control.scss'],
+  selector: 'c-form-error',
+  templateUrl: './custom-form-error.html',
+  styleUrls: ['./custom-form-error.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CustomFormControlComponent implements AfterContentInit {
+export class CustomFormErrorComponent implements AfterContentInit {
   // Default config
   readonly ERROR_CLASS = 'c-control-error';
   readonly ERROR_TEXT_COLOR = '#ee3e3e';
@@ -225,25 +225,25 @@ export class GetValuePipe implements PipeTransform {
 
 @NgModule({
   declarations: [
-    CustomFormControlComponent, GetValuePipe,
+    CustomFormErrorComponent, GetValuePipe,
     CustomFormControlLabelDirective
   ],
   imports: [
     CommonModule,
   ],
   exports: [
-    CustomFormControlComponent,
+    CustomFormErrorComponent,
     CustomFormControlLabelDirective
   ]
 })
-export class CustomFormControlModule {
+export class CustomFormErrorModule {
   private static config: IErrorConfig;
 
-  static rootConfig(config: IErrorConfig): ModuleWithProviders<CustomFormControlModule> {
-    if (CustomFormControlModule.config) throw new Error("CustomFormControlModule.rootConfig() method cannot be called more than once in an application. Use CustomFormControlModule.childConfig() method if you want to pass extra configuration.");
-    CustomFormControlModule.config = config;
+  static rootConfig(config: IErrorConfig): ModuleWithProviders<CustomFormErrorModule> {
+    if (CustomFormErrorModule.config) throw new Error("CustomFormErrorModule.rootConfig() method cannot be called more than once in an application. Use CustomFormErrorModule.childConfig() method if you want to pass extra configuration.");
+    CustomFormErrorModule.config = config;
     return {
-      ngModule: CustomFormControlModule,
+      ngModule: CustomFormErrorModule,
       providers: [{
         provide: CUSTOM_FORM_CONFIG,
         useValue: config
@@ -252,12 +252,12 @@ export class CustomFormControlModule {
     };
   }
 
-  static childConfig(config: IErrorConfig): ModuleWithProviders<CustomFormControlModule> {
+  static childConfig(config: IErrorConfig): ModuleWithProviders<CustomFormErrorModule> {
     return {
-      ngModule: CustomFormControlModule,
+      ngModule: CustomFormErrorModule,
       providers: [{
         provide: CUSTOM_FORM_CONFIG,
-        useValue: { ...CustomFormControlModule.config, ...config }
+        useValue: { ...CustomFormErrorModule.config, ...config }
       }
       ]
     };

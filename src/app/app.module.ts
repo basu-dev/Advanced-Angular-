@@ -12,8 +12,8 @@ import { TwoWayBindingModule } from './two-way-binding/two-way-binding.module';
 import { MediaMatchModule } from 'src/lib/media-match/media-match.module';
 import { CustomFormControlTestComponent } from './components/custom-form-control-test/custom-form-control-test.component';
 import { ReactiveFormsModule } from '@angular/forms';
-import { CustomFormControlModule, IErrorConfig } from 'src/lib/custom-form-control/custom-form-control';
 import { StructuralDirectiveModule } from 'src/lib/structural-directive/structural-directive.module';
+import { CustomFormErrorModule, IErrorConfig } from 'src/lib/custom-form-error/custom-form-error';
 
 @NgModule({
   declarations: [
@@ -29,7 +29,7 @@ import { StructuralDirectiveModule } from 'src/lib/structural-directive/structur
     FormPersistenceModule,
     HeightCalculateModule,
     BroadcastChannelModule,
-    CustomFormControlModule.rootConfig(<IErrorConfig>{
+    CustomFormErrorModule.rootConfig(<IErrorConfig>{
       onTouchedOnly: true,
       errorTextColor: 'var(--text-danger)',
       addErrorClassToElement: true,
