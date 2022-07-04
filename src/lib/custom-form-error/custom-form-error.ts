@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { AfterContentInit, ChangeDetectionStrategy, Component, ContentChild, Directive, ElementRef, Inject, InjectionToken, Input, ModuleWithProviders, NgModule, Optional, Pipe, PipeTransform } from '@angular/core';
-import { FormControlName } from '@angular/forms';
+import { AbstractControl, FormControlName } from '@angular/forms';
 import { Observable, combineLatest, of } from 'rxjs';
 import { distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 interface IError {
@@ -58,6 +58,7 @@ export class CustomFormErrorComponent implements AfterContentInit {
   }
 
   @ContentChild(FormControlName) control!: FormControlName;
+  @ContentChild(AbstractControl, { read: AbstractControl }) abstractControl!: AbstractControl;
   @ContentChild(FormControlName, { read: ElementRef }) controlElement!: ElementRef;
   @ContentChild(CustomFormControlLabelDirective) labelRef!: CustomFormControlLabelDirective;
 
@@ -98,6 +99,7 @@ export class CustomFormErrorComponent implements AfterContentInit {
     this.formatInputmessages();
     if (!this.messagesKeys.length) return;
     this.matchFormErrorsWithInputErrorMessages();
+    console.log(this.control);
   }
 
   init() {
@@ -138,7 +140,10 @@ export class CustomFormErrorComponent implements AfterContentInit {
         } else if (self.config && self.config[`${property}`]) {
           if (self.config[`${property}`] instanceof Function) {
             let configFn = self.config[`${property}`] as Function;
-            self._messages[`${property}`] = self._messages[`${property}`] ?? configFn(this.labelRef ? self.labelRef.el.nativeElement.textContent : this.label, this.data);
+            console.log(this.control);
+            let context = this.control?.errors?.[property];
+            self._messages[`${property}`] = self._messages[`${property}`] ?? configFn(this.labelRef ? self.labelRef.el.nativeElement.textContent : this.label, context ?? this.data);
+
           } else {
             self._messages[`${property}`] = self._messages[`${property}`] ?? self.config[`${property}`] as string;
           }
@@ -208,7 +213,7 @@ export class CustomFormErrorComponent implements AfterContentInit {
           return acc;
         }, <any>{})
       )),
-    ) as Observable<any>;
+    ).pipe(tap(console.log)) as Observable<any>;
   }
 
 };

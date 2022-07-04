@@ -13,6 +13,8 @@ import { MediaMatchModule } from 'src/lib/media-match/media-match.module';
 import { CustomFormControlTestComponent } from './components/custom-form-control-test/custom-form-control-test.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { StructuralDirectiveModule } from 'src/lib/structural-directive/structural-directive.module';
+// import { IErrorConfig, NgxCustomFormErrorModule } from 'ngx-custom-form-error';
+import { NgxFormErrorModule } from 'ngx-form-error';
 import { CustomFormErrorModule, IErrorConfig } from 'src/lib/custom-form-error/custom-form-error';
 
 @NgModule({
@@ -39,6 +41,7 @@ import { CustomFormErrorModule, IErrorConfig } from 'src/lib/custom-form-error/c
       minLength: (label: string, data: { minLength: number; }) => label && data ? `${label} should contain at least ${data.minLength} characters.` : `${label} doesn\'t match minimum length criteria.`,
       maxLength: (label: string, data: { maxLength: number; }) => label && data ? `${label} cannot exceed more than ${data?.maxLength} characters.` : `${label} doesn\'t match maximum length criteria.`
     }),
+    NgxFormErrorModule,
     TwoWayBindingModule,
     StructuralDirectiveModule,
     ReactiveFormsModule

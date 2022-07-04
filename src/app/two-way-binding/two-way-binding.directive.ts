@@ -1,5 +1,5 @@
 import { Directive, ElementRef, EventEmitter, Input, Output } from '@angular/core';
-import { distinctUntilChanged, fromEvent, map, merge, mergeMap, Subject, takeUntil } from 'rxjs';
+import { distinctUntilChanged, fromEvent, map, Subject, takeUntil } from 'rxjs';
 
 @Directive({
   selector: '[twoWay]'
@@ -14,20 +14,20 @@ export class TwoWayBindingDirective {
   constructor(private el: ElementRef) {
 
   }
+  ngOnInit() {
+    this.el.nativeElement.innerText = this.value;
+  }
 
   ngAfterViewInit() {
     let onInput$ = fromEvent(this.el.nativeElement, 'input');
-    this.el.nativeElement.value = this.value;
-
     onInput$
       .pipe(
         takeUntil(this.destroy$),
         distinctUntilChanged(),
-        map((event: any) => event.target.value)
+        map((event: any) => event.target.innerText)
       ).subscribe(
         value => {
           this.emitter.emit(value);
-          console.log(value);
         }
       );
   }

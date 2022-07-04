@@ -1,11 +1,15 @@
-<!-- <app-height-calculate-test></app-height-calculate-test> -->
-<!-- <app-match-media-test></app-match-media-test> -->
-<!-- <app-form-persistence-test></app-form-persistence-test> -->
-<!-- <app-broadcast-channel-test></app-broadcast-channel-test> -->
-<!-- <app-two-way-binding-test></app-two-way-binding-test> -->
-<app-custom-form-control-test></app-custom-form-control-test>
-<div [valueA]="obj">
-    <ng-template [templateType]="obj" pTemplate let-item>
-        {{item.name}}
-    </ng-template>
+<div class="css-462">
+    <div class="-hr-454">
+        <div class="-hv-467 transparent">
+            <div class="-hv-483">
+                <div [(twoWay)]="obj.name" aria-label="Question title 2 Input your question title here" role="textbox"
+                    tabindex="0" contenteditable="true" style="user-select: text;">
+                    ContentEditable Text
+                </div>
+                <!-- <input aria-hidden="true" tabindex="-1"> -->
+                <div></div>
+            </div>
+        </div>
+    </div>
 </div>
+{{obj.name}}

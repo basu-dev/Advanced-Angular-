@@ -14,7 +14,8 @@ import { TwoWayBindingTestComponent } from './test/two-way-binding-test/two-way-
     CommonModule
   ],
   exports: [
-    TwoWayBindingTestComponent
+    TwoWayBindingTestComponent,
+    TwoWayBindingDirective
   ]
 })
 export class TwoWayBindingModule { }
