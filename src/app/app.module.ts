@@ -1,21 +1,23 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MediaMatchModule } from 'src/lib/media-match/media-match.module';
+import { StructuralDirectiveModule } from 'src/lib/structural-directive/structural-directive.module';
+import { HeightCalculateModule } from '../lib/height-calculate/height-calculate';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BroadcastChannelModule } from './broadcast-channel/broadcast-channel.module';
+import { CustomFormControlTestComponent } from './components/custom-form-control-test/custom-form-control-test.component';
 import { HeightCalculateTestComponent } from './components/height-calculate-test/height-calculate-test.component';
 import { MatchMediaTestComponent } from './components/match-media-test/match-media-test.component';
 import { FormPersistenceModule } from './form-persistence/form-persistence.module';
-import { HeightCalculateModule } from '../lib/height-calculate/height-calculate';
 import { TwoWayBindingModule } from './two-way-binding/two-way-binding.module';
-import { MediaMatchModule } from 'src/lib/media-match/media-match.module';
-import { CustomFormControlTestComponent } from './components/custom-form-control-test/custom-form-control-test.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { StructuralDirectiveModule } from 'src/lib/structural-directive/structural-directive.module';
 // import { IErrorConfig, NgxCustomFormErrorModule } from 'ngx-custom-form-error';
 import { NgxFormErrorModule } from 'ngx-form-error';
 import { CustomFormErrorModule, IErrorConfig } from 'src/lib/custom-form-error/custom-form-error';
+import { InputValidatorModule } from './input-validator/input-validator.module';
+import { NotificationModule } from './notification/notification.module';
 
 @NgModule({
   declarations: [
@@ -43,8 +45,11 @@ import { CustomFormErrorModule, IErrorConfig } from 'src/lib/custom-form-error/c
     }),
     NgxFormErrorModule,
     TwoWayBindingModule,
+    FormsModule,
     StructuralDirectiveModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    NotificationModule,
+    InputValidatorModule
   ],
   providers: [
   ],

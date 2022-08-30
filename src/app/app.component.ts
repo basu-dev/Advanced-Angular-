@@ -1,4 +1,15 @@
 import { Component } from '@angular/core';
+type ReqType =
+  {
+    type: 'hello',
+    message?: string;
+  } |
+  {
+    type: 'bye',
+    message: string;
+  };
+
+type argType<Type extends ReqType['type']> = Extract<ReqType, { type: Type; }> extends { message: string; } ? [first: Type, message: string] : [first: Type];
 
 @Component({
   selector: 'app-root',
@@ -11,8 +22,17 @@ export class AppComponent {
   obj = { name: 'basu' };
 
   constructor() {
-
   }
+
+  number = 3;
+
+  test<Type extends ReqType['type']>(...args: argType<Type>) {
+    const first = args[0];
+    const message = args[1];
+    if (message) console.log(first, message);
+    else console.log(first);
+  }
+
   ngOnInit() {
 
   }

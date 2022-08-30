@@ -1,15 +1,9 @@
-<div class="css-462">
-    <div class="-hr-454">
-        <div class="-hv-467 transparent">
-            <div class="-hv-483">
-                <div [(twoWay)]="obj.name" aria-label="Question title 2 Input your question title here" role="textbox"
-                    tabindex="0" contenteditable="true" style="user-select: text;">
-                    ContentEditable Text
-                </div>
-                <!-- <input aria-hidden="true" tabindex="-1"> -->
-                <div></div>
-            </div>
-        </div>
-    </div>
+<h5>Two Way binding Test for contentEditable</h5>
+<div [(twoWay)]="obj.name" contenteditable="true">
 </div>
 {{obj.name}}
+<br />
+<br />
+<h5>Input Validators Test</h5>
+
+<input type="text" appNumberValidator>
