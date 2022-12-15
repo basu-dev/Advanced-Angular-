@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-form-persistence-test',
@@ -8,9 +8,9 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 })
 export class FormPersistenceTestComponent implements OnInit {
 
-  constructor(private fb: FormBuilder) { }
+  constructor(private fb: UntypedFormBuilder) { }
 
-  form!: FormGroup;
+  form!: UntypedFormGroup;
   ngOnInit(): void {
 
     this.form = this.fb.group({

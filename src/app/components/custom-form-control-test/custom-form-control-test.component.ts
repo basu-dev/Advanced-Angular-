@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-custom-form-control-test',
@@ -8,8 +8,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 })
 export class CustomFormControlTestComponent implements OnInit {
 
-  constructor(private fb: FormBuilder) { }
-  form!: FormGroup;
+  constructor(private fb: UntypedFormBuilder) { }
+  form!: UntypedFormGroup;
   MAX_LENGTH: number = 20;
 
   ngOnInit(): void {
