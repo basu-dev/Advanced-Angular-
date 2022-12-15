@@ -1,1 +1,22 @@
-<p>todo-list works!</p>
+<h3>Todos</h3>
+<br />
+
+<input [(ngModel)]="title" />
+<button [disabled]="(addLoading$ | async)" (click)="addTodo()">
+    {{(addLoading$ | async)?'Adding Todo':'Add Todo'}}</button>
+
+
+<br /><br />
+<div *ngIf="isLoading$ | async">
+    Loading Todos ...
+</div>
+
+<div *ngIf="error$ | async as error">
+    {{error || 'Some errors fetching todos. Please try again later!'}}
+</div>
+
+<ng-container *ngIf="todos$ | async as todos">
+    <div *ngFor="let todo of todos">
+        {{todo.title}}
+    </div>
+</ng-container>

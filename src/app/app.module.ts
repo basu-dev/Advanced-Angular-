@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { StoreModule } from "@ngrx/store";
+import { StoreDevtoolsModule } from "@ngrx/store-devtools";
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MediaMatchModule } from 'src/lib/media-match/media-match.module';
@@ -14,6 +16,8 @@ import { MatchMediaTestComponent } from './components/match-media-test/match-med
 import { FormPersistenceModule } from './form-persistence/form-persistence.module';
 import { TwoWayBindingModule } from './two-way-binding/two-way-binding.module';
 // import { IErrorConfig, NgxCustomFormErrorModule } from 'ngx-custom-form-error';
+import { HttpClientModule } from "@angular/common/http";
+import { EffectsModule } from '@ngrx/effects';
 import { NgxFormErrorModule } from 'ngx-form-error';
 import { CustomFormErrorModule, IErrorConfig } from 'src/lib/custom-form-error/custom-form-error';
 import { InputValidatorModule } from './input-validator/input-validator.module';
@@ -45,9 +49,22 @@ import { NotificationModule } from './notification/notification.module';
     }),
     NgxFormErrorModule,
     TwoWayBindingModule,
+    HttpClientModule,
     FormsModule,
     StructuralDirectiveModule,
     ReactiveFormsModule,
+    StoreModule.forRoot({}),
+    EffectsModule.forRoot(),
+    StoreDevtoolsModule.instrument({
+      maxAge: 25,
+      logOnly: false,
+      autoPause: true,
+      features: {
+        pause: false,
+        lock: true,
+        persist: true
+      }
+    }),
     NotificationModule,
     InputValidatorModule
   ],
