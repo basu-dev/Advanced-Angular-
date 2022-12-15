@@ -14,7 +14,7 @@ type argType<Type extends ReqType['type']> = Extract<ReqType, { type: Type; }> e
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
   title = 'advanced-angular';

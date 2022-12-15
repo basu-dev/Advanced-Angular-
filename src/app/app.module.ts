@@ -17,9 +17,11 @@ import { FormPersistenceModule } from './form-persistence/form-persistence.modul
 import { TwoWayBindingModule } from './two-way-binding/two-way-binding.module';
 // import { IErrorConfig, NgxCustomFormErrorModule } from 'ngx-custom-form-error';
 import { HttpClientModule } from "@angular/common/http";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { EffectsModule } from '@ngrx/effects';
 import { NgxFormErrorModule } from 'ngx-form-error';
 import { CustomFormErrorModule, IErrorConfig } from 'src/lib/custom-form-error/custom-form-error';
+import { AnimationTest } from './animation-test.component';
 import { InputValidatorModule } from './input-validator/input-validator.module';
 import { NotificationModule } from './notification/notification.module';
 
@@ -28,10 +30,12 @@ import { NotificationModule } from './notification/notification.module';
     AppComponent,
     HeightCalculateTestComponent,
     MatchMediaTestComponent,
+    AnimationTest,
     CustomFormControlTestComponent,
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     AppRoutingModule,
     MediaMatchModule,
     FormPersistenceModule,
